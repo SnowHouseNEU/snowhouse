@@ -6,23 +6,28 @@
     app:startDestination="@id/navigation_home">
 
     <fragment
-        android:id="@+id/navigation_account"
-        android:name="com.neu.snowhouse.ui.account.AccountFragment"
-        android:label="@string/title_account"
-        tools:layout="@layout/fragment_account" />
-    <fragment
         android:id="@+id/navigation_home"
         android:name="com.neu.snowhouse.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/navigation_forum"
+        android:name="com.neu.snowhouse.ui.forum.ForumFragment"
+        android:label="@string/title_forum"
+        tools:layout="@layout/fragment_forum" />
+    <fragment
+        android:id="@+id/navigation_add"
+        android:name="com.neu.snowhouse.ui.add.AddFragment"
+        android:label="@string/title_add"
+        tools:layout="@layout/fragment_add" />
     <fragment
         android:id="@+id/navigation_inbox"
         android:name="com.neu.snowhouse.ui.inbox.InboxFragment"
         android:label="@string/title_inbox"
         tools:layout="@layout/fragment_inbox" />
     <fragment
-        android:id="@+id/navigation_post"
-        android:name="com.neu.snowhouse.ui.post.PostFragment"
-        android:label="@string/title_post"
-        tools:layout="@layout/fragment_post" />
+        android:id="@+id/navigation_account"
+        android:name="com.neu.snowhouse.ui.account.AccountFragment"
+        android:label="@string/title_account"
+        tools:layout="@layout/fragment_account" />
 </navigation>

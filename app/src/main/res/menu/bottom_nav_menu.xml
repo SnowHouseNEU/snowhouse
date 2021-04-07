@@ -6,14 +6,19 @@
         android:title="@string/title_home" />
 
     <item
+        android:id="@+id/navigation_forum"
+        android:icon="@drawable/ic_forum_black_24dp"
+        android:title="@string/title_forum" />
+
+    <item
+        android:id="@+id/navigation_add"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:title="@string/title_add" />
+
+    <item
         android:id="@+id/navigation_inbox"
         android:icon="@drawable/ic_inbox_black_24dp"
         android:title="@string/title_inbox" />
-
-    <item
-        android:id="@+id/navigation_post"
-        android:icon="@drawable/ic_post_black_24dp"
-        android:title="@string/title_post" />
 
     <item
         android:id="@+id/navigation_account"
