@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">snowhouse</string>
     <string name="title_home">Home</string>
-    <string name="title_account">Account</string>
+    <string name="title_forum">Forum</string>
+    <string name="title_add">Add</string>
     <string name="title_inbox">Inbox</string>
-    <string name="title_post">Post</string>
+    <string name="title_account">Account</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login_title">Sign In</string>
     <string name="register_title">Sign Up</string>
