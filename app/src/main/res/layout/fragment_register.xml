@@ -39,7 +39,8 @@
         android:textColorHint="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_title" />
+        app:layout_constraintTop_toBottomOf="@+id/register_title"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/register_password"
