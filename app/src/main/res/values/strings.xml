@@ -15,4 +15,6 @@
     <string name="register">Register</string>
     <string name="nav_register">Not have an account? Sign Up</string>
     <string name="nav_login">Already have an account? Sign In</string>
+    <string name="search">🔍 Search for posts</string>
+    <string name="search_button">Search</string>
 </resources>

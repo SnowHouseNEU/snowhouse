@@ -1,4 +1,4 @@
-package com.neu.snowhouse.model;
+package com.neu.snowhouse.model.request;
 
 public class PostRequestModel {
     private String userName;
