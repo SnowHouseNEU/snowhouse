@@ -1,4 +1,4 @@
-package com.neu.snowhouse.model;
+package com.neu.snowhouse.model.response;
 
 public class PostResponseModel {
     private int postId;
@@ -7,9 +7,6 @@ public class PostResponseModel {
     private String title;
     private String content;
     private Image image;
-    private String tag1;
-    private String tag2;
-    private String tag3;
     private int likeCount = 0;
     private int dislikeCount = 0;
     private boolean likeClicked = false;
@@ -61,30 +58,6 @@ public class PostResponseModel {
 
     public void setImage(Image image) {
         this.image = image;
-    }
-
-    public String getTag1() {
-        return tag1;
-    }
-
-    public void setTag1(String tag1) {
-        this.tag1 = tag1;
-    }
-
-    public String getTag2() {
-        return tag2;
-    }
-
-    public void setTag2(String tag2) {
-        this.tag2 = tag2;
-    }
-
-    public String getTag3() {
-        return tag3;
-    }
-
-    public void setTag3(String tag3) {
-        this.tag3 = tag3;
     }
 
     public int getLikeCount() {

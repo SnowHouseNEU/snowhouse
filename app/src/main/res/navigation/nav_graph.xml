@@ -14,7 +14,11 @@
         android:id="@+id/navigation_forum"
         android:name="com.neu.snowhouse.ui.forum.ForumFragment"
         android:label="@string/title_forum"
-        tools:layout="@layout/fragment_forum" />
+        tools:layout="@layout/fragment_forum" >
+        <action
+            android:id="@+id/forum_post"
+            app:destination="@id/postFragment" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_add"
         android:name="com.neu.snowhouse.ui.add.AddFragment"
@@ -30,4 +34,9 @@
         android:name="com.neu.snowhouse.ui.account.AccountFragment"
         android:label="@string/title_account"
         tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/postFragment"
+        android:name="com.neu.snowhouse.ui.post.PostFragment"
+        android:label="fragment_post"
+        tools:layout="@layout/fragment_post" />
 </navigation>

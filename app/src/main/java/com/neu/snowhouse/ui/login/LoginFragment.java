@@ -14,21 +14,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.neu.snowhouse.MainActivity;
 import com.neu.snowhouse.R;
 import com.neu.snowhouse.SessionManagement;
 import com.neu.snowhouse.api.API;
 import com.neu.snowhouse.api.RetrofitClient;
-import com.neu.snowhouse.model.UserLoginRequestModel;
-
-import java.io.IOException;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class LoginFragment extends Fragment {
     EditText userName;

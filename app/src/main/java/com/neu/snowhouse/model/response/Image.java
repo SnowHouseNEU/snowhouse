@@ -1,4 +1,4 @@
-package com.neu.snowhouse.model;
+package com.neu.snowhouse.model.response;
 
 public class Image {
     private int imageId;

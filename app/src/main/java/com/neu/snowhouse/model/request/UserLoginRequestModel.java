@@ -1,6 +1,6 @@
-package com.neu.snowhouse.model;
+package com.neu.snowhouse.model.request;
 
-public class UserRegisterRequestModel {
+public class UserLoginRequestModel {
     private String userName;
     private String password;
 
