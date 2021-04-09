@@ -57,6 +57,10 @@ public interface API {
     @GET("post/search/{query}")
     Call<List<LitePostResponseModel>> searchPosts(@Path("query") String query);
 
+    // GET request to get all posts with new comments
+    @GET("post/{currentUser}/newComments")
+    Call<List<LitePostResponseModel>> getPostsWithNewComments(@Path("currentUser") String currentUser);
+
     // GET request to get a comment by commentId
     @GET("comment/{currentUser}/{commentId}")
     Call<CommentResponseModel> getCommentById(@Path("commentId") int commentId, @Path("currentUser") String currentUser);

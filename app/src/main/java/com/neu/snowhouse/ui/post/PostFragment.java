@@ -80,7 +80,6 @@ public class PostFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        assert getArguments() != null;
         userName = SessionManagement.getUserName(getContext());
         postId = getArguments().getInt("postId");
         image = view.findViewById(R.id.post_image);
