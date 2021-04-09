@@ -14,15 +14,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.neu.snowhouse.MainActivity;
 import com.neu.snowhouse.R;
 import com.neu.snowhouse.SessionManagement;
 import com.neu.snowhouse.api.API;
 import com.neu.snowhouse.api.RetrofitClient;
+import com.neu.snowhouse.model.request.UserLoginRequestModel;
+
+import java.io.IOException;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginFragment extends Fragment {
     EditText userName;
@@ -61,46 +67,46 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // only used in dev mode
-                SessionManagement.addUserName(getActivity(), "tma");
-                Intent intent = new Intent(getContext(), MainActivity.class);
-                startActivity(intent);
+//                SessionManagement.addUserName(getActivity(), "tma");
+//                Intent intent = new Intent(getContext(), MainActivity.class);
+//                startActivity(intent);
                 // uncomment the following code when dev is done
-//                if (userName.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
-//                    Toast.makeText(getContext(), "UserName & Password can't be empty", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    UserLoginRequestModel user = new UserLoginRequestModel();
-//                    user.setUserName(userName.getText().toString());
-//                    user.setPassword(password.getText().toString());
-//                    uploadUser = api.loginUser(user);
-//                    // get the result
-//                    uploadUser.enqueue(new Callback<ResponseBody>() {
-//                        @Override
-//                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                            if (response.isSuccessful() && response.body() != null) {
-//                                try {
-//                                    Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
-//                                    SessionManagement.addUserName(getActivity(), userName.getText().toString());
-//                                    Intent intent = new Intent(getContext(), MainActivity.class);
-//                                    startActivity(intent);
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                            if (!response.isSuccessful() && response.errorBody() != null) {
-//                                try {
-//                                    Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                            Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                }
+                if (userName.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
+                    Toast.makeText(getContext(), "UserName & Password can't be empty", Toast.LENGTH_SHORT).show();
+                } else {
+                    UserLoginRequestModel user = new UserLoginRequestModel();
+                    user.setUserName(userName.getText().toString());
+                    user.setPassword(password.getText().toString());
+                    uploadUser = api.loginUser(user);
+                    // get the result
+                    uploadUser.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                try {
+                                    Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
+                                    SessionManagement.addUserName(getActivity(), userName.getText().toString());
+                                    Intent intent = new Intent(getContext(), MainActivity.class);
+                                    startActivity(intent);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            if (!response.isSuccessful() && response.errorBody() != null) {
+                                try {
+                                    Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
     }

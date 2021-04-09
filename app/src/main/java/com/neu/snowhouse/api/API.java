@@ -1,5 +1,7 @@
 package com.neu.snowhouse.api;
 
+import com.neu.snowhouse.model.request.CommentRequestModel;
+import com.neu.snowhouse.model.response.CommentResponseModel;
 import com.neu.snowhouse.model.response.LitePostResponseModel;
 import com.neu.snowhouse.model.response.PostResponseModel;
 import com.neu.snowhouse.model.request.UserLoginRequestModel;
@@ -36,8 +38,16 @@ public interface API {
     Call<ResponseBody> uploadPostWithImage(@Part MultipartBody.Part image, @Part("post") RequestBody jsonPost);
 
     // GET request to get a post by its ID
-    @GET("post/{postId}")
-    Call<PostResponseModel> getPostById(@Path("postId") int postId);
+    @GET("post/{currentUser}/{postId}")
+    Call<PostResponseModel> getPostById(@Path("currentUser") String currentUser, @Path("postId") int postId);
+
+    // POST request to like the post
+    @POST("post/like/{postId}/{currentUser}")
+    Call<ResponseBody> likePost(@Path("postId") int postId, @Path("currentUser") String currentUser);
+
+    // POST request to dislike the post
+    @POST("post/dislike/{postId}/{currentUser}")
+    Call<ResponseBody> dislikePost(@Path("postId") int postId, @Path("currentUser") String currentUser);
 
     // GET request to get all posts
     @GET("post/all")
@@ -46,4 +56,24 @@ public interface API {
     // GET request to search posts
     @GET("post/search/{query}")
     Call<List<LitePostResponseModel>> searchPosts(@Path("query") String query);
+
+    // GET request to get a comment by commentId
+    @GET("comment/{currentUser}/{commentId}")
+    Call<CommentResponseModel> getCommentById(@Path("commentId") int commentId, @Path("currentUser") String currentUser);
+
+    // GET request to get all comments by postId
+    @GET("comment/all/{postId}/{currentUser}")
+    Call<List<CommentResponseModel>> getCommentsByPostId(@Path("postId") int postId, @Path("currentUser") String currentUser);
+
+    // POST request to like the comment
+    @POST("comment/like/{commentId}/{currentUser}")
+    Call<ResponseBody> likeComment(@Path("commentId") int commentId, @Path("currentUser") String currentUser);
+
+    // POST request to dislike the comment
+    @POST("comment/dislike/{commentId}/{currentUser}")
+    Call<ResponseBody> dislikeComment(@Path("commentId") int commentId, @Path("currentUser") String currentUser);
+
+    // POST request to add a new Comment
+    @POST("comment/")
+    Call<CommentResponseModel> addComment(@Body CommentRequestModel commentRequestModel);
 }
