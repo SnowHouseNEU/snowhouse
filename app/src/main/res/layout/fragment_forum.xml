@@ -37,6 +37,9 @@
 
         <TextView
             android:id="@+id/forum_helper_message"
+            android:textSize="24sp"
+            android:textStyle="bold|italic"
+            android:textAlignment="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />

@@ -1,5 +1,6 @@
 package com.neu.snowhouse.ui.forum;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.neu.snowhouse.R;
@@ -35,6 +37,7 @@ public class ForumFragment extends Fragment {
     API api = RetrofitClient.getInstance().getAPI();
     EditText searchText;
     Button searchButton;
+    TextView helperMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class ForumFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         searchText = view.findViewById(R.id.searchBar);
+        helperMessage = view.findViewById(R.id.forum_helper_message);
         recyclerView = view.findViewById(R.id.forum_post_recycler_view);
         postAdapter = new PostAdapter(posts);
         getPosts();
@@ -74,6 +78,7 @@ public class ForumFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     posts = (ArrayList<LitePostResponseModel>) response.body();
                     postAdapter.updateAdapter(posts);
+                    setHelperMessage(posts.size());
                 }
                 if (!response.isSuccessful() && response.errorBody() != null) {
                     try {
@@ -102,6 +107,7 @@ public class ForumFragment extends Fragment {
                     if (response.isSuccessful() && response.body() != null) {
                         posts = (ArrayList<LitePostResponseModel>) response.body();
                         postAdapter.updateAdapter(posts);
+                        setHelperMessage(posts.size());
                     }
                     if (!response.isSuccessful() && response.errorBody() != null) {
                         try {
@@ -118,6 +124,17 @@ public class ForumFragment extends Fragment {
                     Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
                 }
             });
+        } else {
+            getPosts();
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setHelperMessage(int size) {
+        if (size == 0) {
+            helperMessage.setText("No posts...");
+        } else {
+            helperMessage.setText("");
         }
     }
 }
