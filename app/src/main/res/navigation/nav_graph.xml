@@ -9,16 +9,16 @@
         android:id="@+id/navigation_home"
         android:name="com.neu.snowhouse.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_mountainInfoFragment"
+            app:destination="@id/navigation_mountainInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_forum"
         android:name="com.neu.snowhouse.ui.forum.ForumFragment"
         android:label="@string/title_forum"
-        tools:layout="@layout/fragment_forum" >
-        <action
-            android:id="@+id/forum_post"
-            app:destination="@id/postFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_forum" />
     <fragment
         android:id="@+id/navigation_add"
         android:name="com.neu.snowhouse.ui.add.AddFragment"
@@ -37,6 +37,11 @@
     <fragment
         android:id="@+id/postFragment"
         android:name="com.neu.snowhouse.ui.post.PostFragment"
-        android:label="fragment_post"
+        android:label="Post"
         tools:layout="@layout/fragment_post" />
+    <fragment
+        android:id="@+id/navigation_mountainInfoFragment"
+        android:name="com.neu.snowhouse.ui.mountainInfo.MountainInfoFragment"
+        android:label="Mountain Information"
+        tools:layout="@layout/fragment_mountain_info" />
 </navigation>
