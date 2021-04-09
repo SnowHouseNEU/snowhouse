@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
@@ -22,13 +23,27 @@ import java.util.List;
 public class MountainInfoFragment extends Fragment {
     private FragmentMountainInfoBinding binding;
 
+    private static final String ARG_PARAM = "param";
+    private String mParam;
+
     public MountainInfoFragment() {
         // Required empty public constructor
+    }
+
+    public static MountainInfoFragment newInstance(String param) {
+        MountainInfoFragment fragment = new MountainInfoFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM, param);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam = getArguments().getString(ARG_PARAM);
+        }
 
     }
 
@@ -36,8 +51,10 @@ public class MountainInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        binding = FragmentMountainInfoBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        View view = inflater.inflate(R.layout.fragment_mountain_info, container, false);
+        TextView title =  view.findViewById(R.id.mountain_title_text_view);
+        title.setText(mParam);
+        return view;
     }
 
     @Override

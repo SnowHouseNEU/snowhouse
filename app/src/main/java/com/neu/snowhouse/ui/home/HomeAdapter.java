@@ -17,10 +17,12 @@ import java.util.ArrayList;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder>{
 
-    ArrayList<MountainData> mountainData;
+    private ArrayList<MountainData> mountainData;
+    private ItemClickListener clickListener;
 
-    public HomeAdapter(ArrayList<MountainData> mountainData) {
+    public HomeAdapter(ArrayList<MountainData> mountainData, ItemClickListener clickListener) {
         this.mountainData = mountainData;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -32,9 +34,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.HomeViewHolder holder, int position) {
+        MountainData data = mountainData.get(position);
         holder.imageView.setImageResource(mountainData.get(position).getImage());
         holder.titleTextView.setText(mountainData.get(position).getTitle());
         holder.descriptionTextView.setText(mountainData.get(position).getDesc());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.onItemClick(mountainData.get(position));
+            }
+        });
     }
 
     @Override
@@ -54,5 +63,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
             titleTextView = binding.mountainTitle;
             descriptionTextView = binding.mountainDescription;
         }
+    }
+
+    public interface ItemClickListener {
+        public void onItemClick(MountainData data);
     }
  }
