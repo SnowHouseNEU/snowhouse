@@ -33,7 +33,11 @@
         android:id="@+id/navigation_inbox"
         android:name="com.neu.snowhouse.ui.inbox.InboxFragment"
         android:label="@string/title_inbox"
-        tools:layout="@layout/fragment_inbox" />
+        tools:layout="@layout/fragment_inbox" >
+        <action
+            android:id="@+id/inbox_post"
+            app:destination="@id/postFragment" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_account"
         android:name="com.neu.snowhouse.ui.account.AccountFragment"

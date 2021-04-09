@@ -1,60 +1,45 @@
 package com.neu.snowhouse.ui.inbox;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.neu.snowhouse.R;
+import com.neu.snowhouse.SessionManagement;
+import com.neu.snowhouse.api.API;
+import com.neu.snowhouse.api.RetrofitClient;
+import com.neu.snowhouse.model.response.LitePostResponseModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link InboxFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class InboxFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public InboxFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment InboxFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static InboxFragment newInstance(String param1, String param2) {
-        InboxFragment fragment = new InboxFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    String userName;
+    RecyclerView recyclerView;
+    InboxAdapter inboxAdapter;
+    ArrayList<LitePostResponseModel> posts = new ArrayList<>();
+    API api = RetrofitClient.getInstance().getAPI();
+    TextView helperMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -62,5 +47,53 @@ public class InboxFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_inbox, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        userName = SessionManagement.getUserName(getContext());
+        helperMessage = view.findViewById(R.id.inbox_helper_message);
+        recyclerView = view.findViewById(R.id.inbox_post_recycler_view);
+        inboxAdapter = new InboxAdapter(posts);
+        getPosts();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(inboxAdapter);
+    }
+
+    private void getPosts() {
+        Call<List<LitePostResponseModel>> fetchPosts = api.getPostsWithNewComments(userName);
+        fetchPosts.enqueue(new Callback<List<LitePostResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LitePostResponseModel>> call, Response<List<LitePostResponseModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    posts = (ArrayList<LitePostResponseModel>) response.body();
+                    inboxAdapter.updateAdapter(posts);
+                    setHelperMessage(posts.size());
+                }
+                if (!response.isSuccessful() && response.errorBody() != null) {
+                    try {
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LitePostResponseModel>> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setHelperMessage(int size) {
+        if (size == 0) {
+            helperMessage.setText("Your posts don't have any new comments...");
+        } else {
+            helperMessage.setText("");
+        }
     }
 }
