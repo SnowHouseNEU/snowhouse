@@ -42,7 +42,12 @@
         android:id="@+id/navigation_account"
         android:name="com.neu.snowhouse.ui.account.AccountFragment"
         android:label="@string/title_account"
-        tools:layout="@layout/fragment_account" />
+        tools:layout="@layout/fragment_account" >
+        <action
+            android:id="@+id/account_post"
+            app:destination="@+id/postFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/postFragment"
         android:name="com.neu.snowhouse.ui.post.PostFragment"

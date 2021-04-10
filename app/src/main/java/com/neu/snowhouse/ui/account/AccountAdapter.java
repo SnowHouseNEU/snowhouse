@@ -39,7 +39,15 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         holder.likeCount.setText(String.valueOf(posts.get(position).getLikeCount()));
         holder.dislikeCount.setText(String.valueOf(posts.get(position).getDislikeCount()));
         holder.createdTime.setText(String.valueOf(posts.get(position).getCreatedTime()));
-
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
+                Bundle bundle = new Bundle();
+                bundle.putInt("postId", posts.get(position).getPostId());
+                Navigation.findNavController(v).navigate(R.id.account_post, bundle);
+            }
+        });
     }
 
 
@@ -66,7 +74,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
             likeCount = itemView.findViewById(R.id.item_account_likeCount);
             dislikeCount = itemView.findViewById(R.id.item_account_dislikeCount);
             createdTime = itemView.findViewById(R.id.item_account_createdTime);
-            deletePost = itemView.findViewById(R.id.delete_button);
+//            deletePost.setOnClickListener();
         }
     }
 }
