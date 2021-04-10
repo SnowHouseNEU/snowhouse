@@ -42,9 +42,15 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
     }
 
+
+    public void updateAdapter(ArrayList<LitePostResponseModel> newPosts) {
+        this.posts = newPosts;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return 0;
+        return posts.size();
     }
 
     static class AccountViewHolder extends RecyclerView.ViewHolder {
@@ -56,10 +62,10 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
         public AccountViewHolder(@NonNull View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.item_post_title);
-            likeCount = itemView.findViewById(R.id.item_post_likeCount);
-            dislikeCount = itemView.findViewById(R.id.item_post_dislikeCount);
-            createdTime = itemView.findViewById(R.id.item_post_createdTime);
+            title = itemView.findViewById(R.id.item_account_post_title);
+            likeCount = itemView.findViewById(R.id.item_account_likeCount);
+            dislikeCount = itemView.findViewById(R.id.item_account_dislikeCount);
+            createdTime = itemView.findViewById(R.id.item_account_createdTime);
             deletePost = itemView.findViewById(R.id.delete_button);
         }
     }
