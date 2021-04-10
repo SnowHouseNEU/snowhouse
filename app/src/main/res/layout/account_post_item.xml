@@ -11,37 +11,81 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="12dp">
+            android:layout_margin="12dp"
+            tools:ignore="ExtraText">
 
             <TextView
-                android:id="@+id/account_post_title"
+                android:id="@+id/item_account_post_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="title"
-                android:textSize="24dp"
+                android:layout_margin="5dp"
+                android:textStyle="italic"
+                android:text="title(ski wanted)"
+                android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/account_post_time"
+            <ImageButton
+                android:id="@+id/item_account_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:singleLine="true"
-                android:text="time"
-                android:textSize="24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:layout_margin="10dp"
+                android:background="@color/white"
+                android:clickable="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/item_account_post_title"
+                app:srcCompat="@drawable/ic_baseline_thumb_up_20" />
+
+            <ImageButton
+                android:id="@+id/item_account_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:clickable="false"
+                app:layout_constraintStart_toEndOf="@+id/item_account_up"
+                app:layout_constraintTop_toBottomOf="@+id/item_account_post_title"
+                app:srcCompat="@drawable/ic_baseline_thumb_down_20" />
+
+            <TextView
+                android:id="@+id/item_account_likeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="0(2)"
+                app:layout_constraintStart_toEndOf="@+id/item_account_up"
+                app:layout_constraintTop_toBottomOf="@+id/item_account_post_title" />
+
+            <TextView
+                android:id="@+id/item_account_dislikeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="0(2)"
+                app:layout_constraintStart_toEndOf="@+id/item_account_down"
+                app:layout_constraintTop_toBottomOf="@+id/item_account_post_title" />
+
+            <TextView
+                android:id="@+id/item_account_createdTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="CreatedTime(Jun-1-2022)"
+                app:layout_constraintTop_toBottomOf="@+id/delete_button"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
 
             <ImageButton
                 android:id="@+id/delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/account_post_time"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@android:drawable/ic_delete"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/btn_dialog" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@color/white" />
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

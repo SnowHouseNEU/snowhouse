@@ -6,6 +6,8 @@ import com.neu.snowhouse.model.response.LitePostResponseModel;
 import com.neu.snowhouse.model.response.PostResponseModel;
 import com.neu.snowhouse.model.request.UserLoginRequestModel;
 import com.neu.snowhouse.model.request.UserRegisterRequestModel;
+import com.neu.snowhouse.model.request.UserResetPasswordRequestModel;
+import com.neu.snowhouse.model.request.UserDropAccountRequestModel;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -76,4 +79,20 @@ public interface API {
     // POST request to add a new Comment
     @POST("comment/")
     Call<CommentResponseModel> addComment(@Body CommentRequestModel commentRequestModel);
+
+    // POST request user's all post
+    @GET("post/{currentUser}/all")
+    Call<List<LitePostResponseModel>> getMyPosts(@Path("currentUser") String currentUser);
+
+    // DELETE a post by its id
+    @DELETE("post/{currentUser}/{postId}")
+    Call<ResponseBody> deletePostById(@Path("currentUser") String currentUser, @Path("postId") int postId);
+
+    // Reset password
+    @POST("user/resetPassword")
+    Call<ResponseBody> resetPassword(@Body UserResetPasswordRequestModel user);
+
+    // Drop account
+    @DELETE("user/dropAccount")
+    Call<ResponseBody> deleteAccount(@Body UserDropAccountRequestModel user);
 }
