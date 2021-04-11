@@ -28,7 +28,11 @@
         android:id="@+id/navigation_add"
         android:name="com.neu.snowhouse.ui.add.AddFragment"
         android:label="@string/title_add"
-        tools:layout="@layout/fragment_add" />
+        tools:layout="@layout/fragment_add" >
+        <action
+            android:id="@+id/add_forum"
+            app:destination="@id/navigation_forum" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_inbox"
         android:name="com.neu.snowhouse.ui.inbox.InboxFragment"

@@ -34,7 +34,12 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxViewHol
     public void onBindViewHolder(@NonNull InboxViewHolder holder, int position) {
         String title = posts.get(position).getTitle();
         int unReadComments = posts.get(position).getUnReadComments();
-        String message = "Post: " + title + " has " + unReadComments + " new comments";
+        String message;
+        if (unReadComments <= 1) {
+            message = "Post: \"" + title + "\" has " + unReadComments + " new comment";
+        } else {
+            message = "Post: \"" + title + "\" has " + unReadComments + " new comments";
+        }
         holder.title.setText(message);
         holder.likeCount.setText(String.valueOf(posts.get(position).getLikeCount()));
         holder.dislikeCount.setText(String.valueOf(posts.get(position).getDislikeCount()));

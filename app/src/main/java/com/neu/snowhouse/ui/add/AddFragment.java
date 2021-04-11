@@ -2,34 +2,61 @@ package com.neu.snowhouse.ui.add;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.*;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+
+import com.google.gson.Gson;
 import com.neu.snowhouse.R;
+import com.neu.snowhouse.SessionManagement;
+import com.neu.snowhouse.api.API;
+import com.neu.snowhouse.api.RetrofitClient;
+import com.neu.snowhouse.model.request.PostRequestModel;
+
+import java.io.File;
 import java.io.IOException;
-import static android.app.Activity.RESULT_OK;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddFragment extends Fragment {
 
-    private EditText enterTitle;
-    private EditText mainBody;
-    private ImageView imageView;
-    private Button post;
-    private Uri selectedImage;
-    private ImageButton cameraImage;
-    private ImageButton folderImage;
-    private String partImage1;
-    private String partImage2;
-
+    API api = RetrofitClient.getInstance().getAPI();
+    // for image chosen
+    TextView imgPath;
     private static final int PICK_IMAGE_REQUEST = 9544;
+    ImageView image;
+    Uri selectedImage;
+    String part_image;
+    // for construct the post
+    String userName;
+    EditText editTitle;
+    EditText editTag;
+    EditText editContent;
+    Button uploadPostButton;
 
     // Permissions for accessing the storage
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -41,52 +68,226 @@ public class AddFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add, container, false);
-        enterTitle = view.findViewById(R.id.addTitle);
-        mainBody = view.findViewById(R.id.mainText);
-        imageView = (ImageView) view.findViewById(R.id.image);
-        post = view.findViewById(R.id.postButton);
-        cameraImage = view.findViewById(R.id.addFromCamera);
-        folderImage = view.findViewById(R.id.addFromPhotos);
-        return view;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_add, container, false);
     }
 
-    public void getImageFromPhotos () {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-        startActivityForResult(Intent.createChooser(intent,"Open Gallery"), PICK_IMAGE_REQUEST);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        imgPath = view.findViewById(R.id.imagePickPath);
+        image = view.findViewById(R.id.image);
+        userName = SessionManagement.getUserName(getContext());
+        editTitle = view.findViewById(R.id.editTitle);
+        editTag = view.findViewById(R.id.editTag);
+        editContent = view.findViewById(R.id.editContent);
+        imgPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickImage(v);
+            }
+        });
+        uploadPostButton = view.findViewById(R.id.uploadPostButton);
+        uploadPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadPost(v);
+            }
+        });
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, requestCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST) {
-                selectedImage = data.getData();                                                         // Get the image file URI
-                String[] imageProjection = {MediaStore.Images.Media.DATA};
-                @SuppressLint("Recycle") Cursor cursor = getContext().getContentResolver().query(selectedImage,
-                        imageProjection, null, null, null);
-                if (cursor != null) {
-                    cursor.moveToFirst();
-                    int indexImage = cursor.getColumnIndex(imageProjection[0]);
-                    partImage1 = cursor.getString(indexImage);
-                    //folderImage.setText(partImage1);                                                        // Get the image file absolute path
-                    Bitmap bitmap = null;
+    private void uploadPost(View view) {
+        String title = editTitle.getText().toString().trim();
+        String content = editContent.getText().toString().trim();
+        String tags = editTag.getText().toString().trim();
+        String tag1 = "";
+        String tag2 = "";
+        String tag3 = "";
+        String[] arr = tags.split(",");
+        if (title.equals("")) {
+            Toast.makeText(getContext(), "Post title can't be empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (arr.length > 0) {
+            tag1 = arr[0].trim();
+        }
+        if (arr.length > 1) {
+            tag2 = arr[1].trim();
+        }
+        if (arr.length > 2) {
+            tag3 = arr[2].trim();
+        }
+        PostRequestModel post = new PostRequestModel();
+        post.setUserName(userName);
+        post.setTitle(title);
+        post.setContent(content);
+        post.setTag1(tag1);
+        post.setTag2(tag2);
+        post.setTag2(tag3);
+        Gson gson = new Gson();
+        RequestBody jsonPost = RequestBody.create(MediaType.parse("multipart/form-data"), gson.toJson(post));
+        Call<ResponseBody> upload;
+        if (part_image == null) {
+            // the user doesn't choose a image
+            upload = api.uploadRawPost(jsonPost);
+        } else {
+            // the user chooses a image
+            File imageFile = new File(part_image);                                                          // Create a file using the absolute path of the image
+            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), imageFile);
+            MultipartBody.Part partImage = MultipartBody.Part.createFormData("file", imageFile.getName(), reqBody);
+            upload = api.uploadPostWithImage(partImage, jsonPost);
+        }
+
+        // get the result
+        upload.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     try {
-                        bitmap = MediaStore.Images.Media.getBitmap(this.getContext().getContentResolver(), selectedImage);
+                        Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
+                        Navigation.findNavController(view).navigate(R.id.add_forum);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    imageView.setImageBitmap(bitmap);
+                }
+                if (!response.isSuccessful() && response.errorBody() != null) {
+                    try {
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    ActivityResultLauncher<Intent> launchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent data = result.getData();
+            // your operation....
+            selectedImage = data.getData();                                                         // Get the image file URI
+            String[] imageProjection = {MediaStore.Images.Media.DATA};
+            @SuppressLint("Recycle") Cursor cursor = getActivity().getContentResolver().query(selectedImage, imageProjection, null, null, null);
+            if (cursor != null) {
+                cursor.moveToFirst();
+                int indexImage = cursor.getColumnIndex(imageProjection[0]);
+                part_image = cursor.getString(indexImage);
+                imgPath.setText(part_image);                                                        // Get the image file absolute path
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ViewGroup.LayoutParams params = image.getLayoutParams();
+                params.width = 500;
+                params.height = 500;
+                image.setLayoutParams(params);
+                image.setImageBitmap(bitmap);                                                       // Set the ImageView with the bitmap of the image
+            }
+        }
+    });
+
+    // Method for starting the activity for selecting image from phone storage
+    public void pickImage(View view) {
+        verifyStoragePermissions((Activity) view.getContext());
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        launchActivity.launch(intent);
+    }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
         }
     }
+
+//    private EditText enterTitle;
+//    private EditText mainBody;
+//    private ImageView imageView;
+//    private Button post;
+//    private Uri selectedImage;
+//    private ImageButton cameraImage;
+//    private ImageButton folderImage;
+//    private String partImage1;
+//    private String partImage2;
+//
+//    private static final int PICK_IMAGE_REQUEST = 9544;
+//
+//    // Permissions for accessing the storage
+//    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+//    private static final String[] PERMISSIONS_STORAGE = {
+//            Manifest.permission.READ_EXTERNAL_STORAGE,
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE
+//    };
+//
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//    }
+//
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        View view = inflater.inflate(R.layout.fragment_add, container, false);
+//        enterTitle = view.findViewById(R.id.addTitle);
+//        mainBody = view.findViewById(R.id.mainText);
+//        imageView = (ImageView) view.findViewById(R.id.image);
+//        post = view.findViewById(R.id.postButton);
+//        cameraImage = view.findViewById(R.id.addFromCamera);
+//        folderImage = view.findViewById(R.id.addFromPhotos);
+//        return view;
+//    }
+//
+//    public void getImageFromPhotos () {
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/*");
+//        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+//        startActivityForResult(Intent.createChooser(intent,"Open Gallery"), PICK_IMAGE_REQUEST);
+//    }
+//
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, requestCode, data);
+//        if (resultCode == RESULT_OK) {
+//            if (requestCode == PICK_IMAGE_REQUEST) {
+//                selectedImage = data.getData();                                                         // Get the image file URI
+//                String[] imageProjection = {MediaStore.Images.Media.DATA};
+//                @SuppressLint("Recycle") Cursor cursor = getContext().getContentResolver().query(selectedImage,
+//                        imageProjection, null, null, null);
+//                if (cursor != null) {
+//                    cursor.moveToFirst();
+//                    int indexImage = cursor.getColumnIndex(imageProjection[0]);
+//                    partImage1 = cursor.getString(indexImage);
+//                    //folderImage.setText(partImage1);                                                        // Get the image file absolute path
+//                    Bitmap bitmap = null;
+//                    try {
+//                        bitmap = MediaStore.Images.Media.getBitmap(this.getContext().getContentResolver(), selectedImage);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    imageView.setImageBitmap(bitmap);
+//                }
+//            }
+//        }
+//    }
 
     //   public static void verifyStoragePermissions(Fragment f) {
 //        // Check if we have write permission
@@ -102,6 +303,5 @@ public class AddFragment extends Fragment {
 //            );
 //        }
 //    }
-
 }
 

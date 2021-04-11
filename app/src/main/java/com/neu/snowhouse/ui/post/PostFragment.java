@@ -205,11 +205,11 @@ public class PostFragment extends Fragment {
                         e.printStackTrace();
                     }
                     if (bmp[0] != null) {
-                        image.setImageBitmap(bmp[0]);
                         ViewGroup.LayoutParams params = image.getLayoutParams();
-                        params.width = 362;
-                        params.height = 221;
+                        params.width = 500;
+                        params.height = 500;
                         image.setLayoutParams(params);
+                        image.setImageBitmap(bmp[0]);
                     }
                 }
                 if (!response.isSuccessful() && response.errorBody() != null) {
