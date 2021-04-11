@@ -28,8 +28,11 @@ import com.neu.snowhouse.SessionManagement;
 import com.neu.snowhouse.UserAuthorizeActivity;
 import com.neu.snowhouse.api.API;
 import com.neu.snowhouse.api.RetrofitClient;
+import com.neu.snowhouse.model.request.UserDropAccountRequestModel;
+import com.neu.snowhouse.model.request.UserResetPasswordRequestModel;
 import com.neu.snowhouse.model.response.LitePostResponseModel;
 import com.neu.snowhouse.ui.forum.PostAdapter;
+import com.neu.snowhouse.ui.login.LoginFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +48,7 @@ public class AccountFragment extends Fragment {
     private AlertDialog.Builder dialogBuilder2;
     private AlertDialog dialog1;
     private AlertDialog dialog2;
-    private EditText editUserName, editOldPassword, editNewPassword;
+    private EditText editOldPassword, editNewPassword;
     private Button button_confirm_reset, button_cancel_reset, button_confirm_drop, button_cancel_drop;
     String userName;
     RecyclerView recyclerView;
@@ -53,6 +56,8 @@ public class AccountFragment extends Fragment {
     ArrayList<LitePostResponseModel> posts = new ArrayList<>();
     API api = RetrofitClient.getInstance().getAPI();
     TextView helperMessage;
+    Call<ResponseBody> uploadPassword;
+    Call<ResponseBody> dropAccount;
 //    int postId;
 
     @Override
@@ -78,20 +83,130 @@ public class AccountFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.button_resetpassword) {
+            createResetPasswordDialog();
         }
         if (id == R.id.button_logout) {
-
+            SessionManagement.removeUserName(getActivity());
+            Intent intent = new Intent(getContext(), UserAuthorizeActivity.class);
+            startActivity(intent);
         }
         if (id == R.id.button_dropacc) {
-
+            createDropAccountDialog();
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void createResetPasswordDialog(){
-        dialogBuilder1 = new AlertDialog.Builder(this.getActivity());
+        dialogBuilder1 = new AlertDialog.Builder(getActivity());
+        final View resetPopup = getLayoutInflater().inflate(R.layout.reset_popup, null);
+        editOldPassword = (EditText) resetPopup.findViewById(R.id.reset_oldpassword);
+        editNewPassword = (EditText) resetPopup.findViewById(R.id.reset_newpassword);
+        button_confirm_reset = (Button) resetPopup.findViewById(R.id.reset_save);
+        button_cancel_reset = (Button) resetPopup.findViewById(R.id.reset_cancel);
+        dialogBuilder1.setView(resetPopup);
+        dialog1 = dialogBuilder1.create();
+        dialog1.show();
+        userName = SessionManagement.getUserName(getContext());
+        button_confirm_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editOldPassword.getText().toString().trim().equals("") || editNewPassword.getText().toString().trim().equals("")) {
+                    Toast.makeText(getActivity(), "Old Password or New Password can't be empty", Toast.LENGTH_SHORT).show();
+                } else {
+                    UserResetPasswordRequestModel userResetPasswordRequestModel = new UserResetPasswordRequestModel();
+                    userResetPasswordRequestModel.setUserName(userName);
+                    userResetPasswordRequestModel.setOldPassword(editOldPassword.getText().toString());
+                    userResetPasswordRequestModel.setNewPassword(editNewPassword.getText().toString());
+                    uploadPassword = api.resetPassword(userResetPasswordRequestModel);
+
+                    uploadPassword.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                try {
+                                    Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
+                                    dialog1.dismiss();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            if (!response.isSuccessful() && response.errorBody() != null) {
+                                try {
+                                    Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+        button_cancel_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog1.dismiss();
+            }
+        });
 
     }
+     public void createDropAccountDialog(){
+        dialogBuilder2 = new AlertDialog.Builder(getActivity());
+        final View dropPopup = getLayoutInflater().inflate(R.layout.drop_popup, null);
+        button_confirm_drop = (Button) dropPopup.findViewById(R.id.button_drop_confirm);
+        button_cancel_drop = (Button) dropPopup.findViewById(R.id.button_drop_cancel);
+        dialogBuilder2.setView(dropPopup);
+        dialog2 = dialogBuilder2.create();
+        dialog2.show();
+        userName = SessionManagement.getUserName(getContext());
+        button_confirm_drop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserDropAccountRequestModel userDropAccountRequestModel = new UserDropAccountRequestModel();
+                userDropAccountRequestModel.setUserName(userName);
+                dropAccount = api.deleteAccount(userDropAccountRequestModel);
+                dropAccount.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(getContext(), UserAuthorizeActivity.class);
+                                startActivity(intent);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (!response.isSuccessful() && response.errorBody() != null) {
+                            try {
+                                Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
+
+        button_cancel_drop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog2.dismiss();
+            }
+        });
+     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -102,15 +217,15 @@ public class AccountFragment extends Fragment {
         accountAdapter = new AccountAdapter(posts);
 //        postId = getArguments().getInt("postId");
         getMyPosts();
-        Button logoutButton = getView().findViewById(R.id.button_logout);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SessionManagement.removeUserName(getActivity());
-                Intent intent = new Intent(getContext(), UserAuthorizeActivity.class);
-                startActivity(intent);
-            }
-        });
+//        Button logoutButton = getView().findViewById(R.id.button_logout);
+//        logoutButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SessionManagement.removeUserName(getActivity());
+//                Intent intent = new Intent(getContext(), UserAuthorizeActivity.class);
+//                startActivity(intent);
+//            }
+//        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(accountAdapter);
 //        DeleteClickListener deleteClickListener = new DeleteClickListener() {
