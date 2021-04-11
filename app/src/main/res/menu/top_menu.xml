@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<!--    <item-->
-<!--        android:id="@+id/account_menu"-->
-<!--        android:title="account_change"-->
-<!--        android:icon="@drawable/ic_outline_arrow_downward_24"-->
-<!--        app:showAsAction="always" />-->
 
     <item
         android:id="@+id/button_resetpassword"
@@ -14,12 +9,12 @@
 
     <item
         android:id="@+id/button_logout"
-        android:title="Logout"
+        android:title="Sign Out"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/button_dropacc"
-        android:title="Drop account"
+        android:title="Drop Account"
         app:showAsAction="never" />
 
 

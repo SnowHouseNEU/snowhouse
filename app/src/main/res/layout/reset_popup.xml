@@ -1,69 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    android:padding="5dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="5dp">
 
-
-    <TextView
-        android:id="@+id/reset_password_text"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reset Password"
-        android:textAlignment="center"
-        android:textSize="30dp"
-        android:textStyle="bold|italic"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
+        <TextView
+            android:id="@+id/reset_password_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Reset Password"
+            android:textAlignment="center"
+            android:textSize="25sp"
+            android:textStyle="bold|italic" />
 
-    <EditText
-        android:id="@+id/reset_oldpassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="Old Password"
-        app:layout_constraintTop_toBottomOf="@+id/reset_password_text" />
+        <EditText
+            android:id="@+id/reset_oldpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="Old Password"
+            android:inputType="textPassword" />
 
-    <EditText
-        android:id="@+id/reset_newpassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="New password"
-        app:layout_constraintTop_toBottomOf="@+id/reset_oldpassword" />
+        <EditText
+            android:id="@+id/reset_newpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="New password"
+            android:inputType="textPassword" />
 
+        <Button
+            android:id="@+id/reset_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/white"
+            android:textSize="18sp"
+            android:text="Cancel"
+            android:textStyle="italic"
+            android:textColor="@color/blue"
+            app:backgroundTint="@null" />
 
-    <Button
-        android:id="@+id/reset_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:layout_marginTop="30dp"
-        android:background="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reset_newpassword" />
+        <Button
+            android:id="@+id/reset_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:background="@color/white"
+            android:textColor="@color/red"
+            android:textSize="18sp"
+            app:backgroundTint="@null"
+            android:text="Reset"
+            android:textStyle="italic"/>
 
-    <Button
-        android:id="@+id/reset_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="Save"
-        android:background="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reset_newpassword" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:textStyle="bold|italic" />
 
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

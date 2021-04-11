@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -19,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Post Title"
+            android:text="@string/title"
             android:textSize="24sp"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +51,7 @@
             android:id="@+id/item_post_userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="UserName"
+            android:text="@string/userName"
             android:layout_margin="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +60,7 @@
             android:id="@+id/item_post_createdTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CreatedTime"
+            android:text="@string/createdTime"
             android:layout_margin="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -70,7 +69,7 @@
             android:id="@+id/item_post_likeCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
+            android:text="@string/count"
             android:layout_margin="5dp"
             app:layout_constraintStart_toEndOf="@+id/item_post_up"
             app:layout_constraintTop_toBottomOf="@+id/item_post_title" />
@@ -79,7 +78,7 @@
             android:id="@+id/item_post_dislikeCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
+            android:text="@string/count"
             android:layout_margin="5dp"
             app:layout_constraintStart_toEndOf="@+id/item_post_down"
             app:layout_constraintTop_toBottomOf="@+id/item_post_title" />

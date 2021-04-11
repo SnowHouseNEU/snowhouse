@@ -21,16 +21,21 @@ import java.util.ArrayList;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder> {
     ArrayList<LitePostResponseModel> posts;
+    private DeleteClickListener listener;
 
     public AccountAdapter(ArrayList<LitePostResponseModel> posts) {
         this.posts = posts;
+    }
+
+    public void setListener(DeleteClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public AccountViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.account_post_item, parent, false);
-        return new AccountViewHolder(view);
+        return new AccountViewHolder(view, listener);
     }
 
     @Override
@@ -68,13 +73,24 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         TextView createdTime;
         ImageButton deletePost;
 
-        public AccountViewHolder(@NonNull View itemView) {
+        public AccountViewHolder(@NonNull View itemView, final DeleteClickListener listener) {
             super(itemView);
-            title = itemView.findViewById(R.id.item_account_post_title);
+            title = itemView.findViewById(R.id.item_account_title);
             likeCount = itemView.findViewById(R.id.item_account_likeCount);
             dislikeCount = itemView.findViewById(R.id.item_account_dislikeCount);
             createdTime = itemView.findViewById(R.id.item_account_createdTime);
-//            deletePost.setOnClickListener();
+            deletePost = itemView.findViewById(R.id.delete_button);
+            deletePost.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getLayoutPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }
