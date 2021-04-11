@@ -2,7 +2,6 @@ package com.neu.snowhouse.ui.account;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -31,8 +30,6 @@ import com.neu.snowhouse.api.RetrofitClient;
 import com.neu.snowhouse.model.request.UserDropAccountRequestModel;
 import com.neu.snowhouse.model.request.UserResetPasswordRequestModel;
 import com.neu.snowhouse.model.response.LitePostResponseModel;
-import com.neu.snowhouse.ui.forum.PostAdapter;
-import com.neu.snowhouse.ui.login.LoginFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,21 +41,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AccountFragment extends Fragment {
-    private AlertDialog.Builder dialogBuilder1;
-    private AlertDialog.Builder dialogBuilder2;
-    private AlertDialog dialog1;
-    private AlertDialog dialog2;
-    private EditText editOldPassword, editNewPassword;
-    private Button button_confirm_reset, button_cancel_reset, button_confirm_drop, button_cancel_drop;
+    // for posts
+    TextView accountUserName;
     String userName;
     RecyclerView recyclerView;
     AccountAdapter accountAdapter;
     ArrayList<LitePostResponseModel> posts = new ArrayList<>();
     API api = RetrofitClient.getInstance().getAPI();
     TextView helperMessage;
+    private AlertDialog dialog1;
+    private AlertDialog dialog2;
+    private EditText editOldPassword, editNewPassword;
+
     Call<ResponseBody> uploadPassword;
     Call<ResponseBody> dropAccount;
-//    int postId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,8 +71,94 @@ public class AccountFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.top_menu,menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        inflater.inflate(R.menu.top_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        userName = SessionManagement.getUserName(getContext());
+        accountUserName = view.findViewById(R.id.account_userName);
+        accountUserName.setText(userName);
+        // for posts
+        recyclerView = view.findViewById(R.id.account_post_recycler_view);
+        helperMessage = view.findViewById(R.id.account_helper_message);
+        accountAdapter = new AccountAdapter(posts);
+        getMyPosts();
+        DeleteClickListener listener = new DeleteClickListener() {
+            @Override
+            public void onDeleteClick(int position) {
+                int postId = posts.get(position).getPostId();
+                Call<ResponseBody> deletePost = api.deletePostById(userName, postId);
+                deletePost.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            try {
+                                Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
+                                posts.remove(position);
+                                accountAdapter.notifyItemRemoved(position);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (!response.isSuccessful() && response.errorBody() != null) {
+                            try {
+                                Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        t.printStackTrace();
+                        Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        };
+        accountAdapter.setListener(listener);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(accountAdapter);
+    }
+
+    private void getMyPosts() {
+        Call<List<LitePostResponseModel>> fetchPosts = api.getMyPosts(userName);
+        fetchPosts.enqueue(new Callback<List<LitePostResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LitePostResponseModel>> call, Response<List<LitePostResponseModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    posts = (ArrayList<LitePostResponseModel>) response.body();
+                    accountAdapter.updateAdapter(posts);
+                    setHelperMessage(posts.size());
+                }
+                if (!response.isSuccessful() && response.errorBody() != null) {
+                    try {
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LitePostResponseModel>> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setHelperMessage(int size) {
+        if (size == 0) {
+            helperMessage.setText("You don't have any posts...");
+        } else {
+            helperMessage.setText("");
+        }
     }
 
     @Override
@@ -96,13 +178,14 @@ public class AccountFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void createResetPasswordDialog(){
-        dialogBuilder1 = new AlertDialog.Builder(getActivity());
+    public void createResetPasswordDialog() {
+        // for popup
+        AlertDialog.Builder dialogBuilder1 = new AlertDialog.Builder(getActivity());
         final View resetPopup = getLayoutInflater().inflate(R.layout.reset_popup, null);
         editOldPassword = (EditText) resetPopup.findViewById(R.id.reset_oldpassword);
         editNewPassword = (EditText) resetPopup.findViewById(R.id.reset_newpassword);
-        button_confirm_reset = (Button) resetPopup.findViewById(R.id.reset_save);
-        button_cancel_reset = (Button) resetPopup.findViewById(R.id.reset_cancel);
+        Button button_confirm_reset = (Button) resetPopup.findViewById(R.id.reset_save);
+        Button button_cancel_reset = (Button) resetPopup.findViewById(R.id.reset_cancel);
         dialogBuilder1.setView(resetPopup);
         dialog1 = dialogBuilder1.create();
         dialog1.show();
@@ -155,11 +238,12 @@ public class AccountFragment extends Fragment {
         });
 
     }
-     public void createDropAccountDialog(){
-        dialogBuilder2 = new AlertDialog.Builder(getActivity());
+
+    public void createDropAccountDialog() {
+        AlertDialog.Builder dialogBuilder2 = new AlertDialog.Builder(getActivity());
         final View dropPopup = getLayoutInflater().inflate(R.layout.drop_popup, null);
-        button_confirm_drop = (Button) dropPopup.findViewById(R.id.button_drop_confirm);
-        button_cancel_drop = (Button) dropPopup.findViewById(R.id.button_drop_cancel);
+        Button button_confirm_drop = (Button) dropPopup.findViewById(R.id.button_drop_confirm);
+        Button button_cancel_drop = (Button) dropPopup.findViewById(R.id.button_drop_cancel);
         dialogBuilder2.setView(dropPopup);
         dialog2 = dialogBuilder2.create();
         dialog2.show();
@@ -206,69 +290,5 @@ public class AccountFragment extends Fragment {
                 dialog2.dismiss();
             }
         });
-     }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        assert getActivity() != null;
-        userName = SessionManagement.getUserName(getContext());
-        recyclerView = view.findViewById(R.id.account_post);
-        helperMessage = view.findViewById(R.id.account_helper_message);
-        accountAdapter = new AccountAdapter(posts);
-//        postId = getArguments().getInt("postId");
-        getMyPosts();
-//        Button logoutButton = getView().findViewById(R.id.button_logout);
-//        logoutButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                SessionManagement.removeUserName(getActivity());
-//                Intent intent = new Intent(getContext(), UserAuthorizeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(accountAdapter);
-//        DeleteClickListener deleteClickListener = new DeleteClickListener() {
-////            @Override
-////            public void onDeleteClick(int position) {
-////                Call<ResponseBody>
-////            }
-//        }
-
-    }
-    private void getMyPosts() {
-        Call<List<LitePostResponseModel>> fetchPosts = api.getMyPosts(userName);
-        fetchPosts.enqueue(new Callback<List<LitePostResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<LitePostResponseModel>> call, Response<List<LitePostResponseModel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    posts = (ArrayList<LitePostResponseModel>) response.body();
-                    accountAdapter.updateAdapter(posts);
-                    setHelperMessage(posts.size());
-                }
-                if (!response.isSuccessful() && response.errorBody() != null) {
-                    try {
-                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LitePostResponseModel>> call, Throwable t) {
-                t.printStackTrace();
-                Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void setHelperMessage(int size) {
-        if (size == 0) {
-            helperMessage.setText("No posts...");
-        } else {
-            helperMessage.setText("");
-        }
     }
 }

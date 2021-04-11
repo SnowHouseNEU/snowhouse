@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout3"
+    android:id="@+id/fragment_account"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.account.AccountFragment">
@@ -16,34 +16,37 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/userName"
+            android:id="@+id/account_userName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:text="TextView"
-            android:textSize="30dp" />
+            android:layout_margin="10dp"
+            android:text="@string/userName"
+            android:textAlignment="center"
+            android:textSize="30sp" />
 
         <TextView
+            android:id="@+id/account_post_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="POST:"
-            android:textSize="20dp" />
-
+            android:layout_margin="10dp"
+            android:text="@string/my_post"
+            android:textStyle="bold|italic"
+            android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/account_post"
+            android:id="@+id/account_post_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp" />
 
         <TextView
             android:id="@+id/account_helper_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="(helper message)"
+            android:text=""
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textStyle="bold|italic"
-            app:layout_constraintTop_toBottomOf="@+id/account_post" />
+            android:textStyle="bold|italic" />
     </LinearLayout>
 
 
