@@ -51,8 +51,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="24dp"
             android:text="@tools:sample/lorem/random"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/mountain_ticket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Ticket information: Random Random Random"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/mountain_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Weather information: Random Random Random"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/mountain_hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Open Hours information: Random Random Random"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/mountain_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Mountain Address: Random Random Random"
+            android:layout_marginBottom="24dp"
             android:textSize="20sp" />
     </LinearLayout>
 
