@@ -46,12 +46,18 @@
 
         </androidx.cardview.widget.CardView>
 
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapsView"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
         <TextView
             android:id="@+id/mountain_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@tools:sample/lorem/random"
+            android:text="Mountain Description: Random Random Random"
             android:textSize="20sp" />
 
         <TextView
