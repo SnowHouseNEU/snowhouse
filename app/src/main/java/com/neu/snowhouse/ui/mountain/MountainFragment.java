@@ -16,6 +16,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.neu.snowhouse.R;
 import com.neu.snowhouse.SessionManagement;
 import com.neu.snowhouse.api.API;
@@ -32,7 +39,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MountainFragment extends Fragment {
+public class MountainFragment extends Fragment implements OnMapReadyCallback {
     String userName;
     int mountainId;
     API api = RetrofitClient.getInstance().getAPI();
@@ -45,6 +52,8 @@ public class MountainFragment extends Fragment {
     TextView mountainWeather;
     TextView mountainHours;
     TextView mountainAddress;
+    GoogleMap map;
+    MapView mapView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +85,13 @@ public class MountainFragment extends Fragment {
         sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
         sliderView.setScrollTimeInSec(8); //set scroll delay in seconds :
         sliderView.startAutoCycle();
+
+        mapView = view.findViewById(R.id.mapsView);
+        if(mapView != null) {
+            mapView.onCreate(null);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
     }
 
     private void getMountain() {
@@ -130,5 +146,15 @@ public class MountainFragment extends Fragment {
                 Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        MapsInitializer.initialize(getContext());
+        map = googleMap;
+
+        LatLng stevensPass = new LatLng(47.74499702, -121.09333296);
+        map.addMarker(new MarkerOptions().position(stevensPass).title("Marker in Stevens Pass"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(stevensPass, 15f));
     }
 }
