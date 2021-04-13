@@ -3,7 +3,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="350dp"
+  android:layout_height="300dp"
   android:layout_margin="8dp"
   app:cardCornerRadius="8dp"
   app:cardElevation="12dp">
@@ -14,7 +14,7 @@
         android:layout_margin="12dp">
 
         <TextView
-            android:id="@+id/mountain_title"
+            android:id="@+id/item_mountain_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
@@ -24,31 +24,31 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Mountain Name" />
 
-        <View
-            android:id="@+id/saved_item_description_separator"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="4dp"
-            android:background="#dedddd"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/mountain_description"
-            app:layout_constraintBottom_toBottomOf="@id/mountain_title"/>
+<!--        <View-->
+<!--            android:id="@+id/saved_item_description_separator"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:layout_marginTop="4dp"-->
+<!--            android:background="#dedddd"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toLeftOf="parent"-->
+<!--            app:layout_constraintBottom_toTopOf="@id/mountain_description"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/mountain_title"/>-->
 
-        <TextView
-            android:id="@+id/mountain_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/mountain_image_view"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="@tools:sample/lorem/random" />
+<!--        <TextView-->
+<!--            android:id="@+id/mountain_description"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="16dp"-->
+<!--            android:ellipsize="end"-->
+<!--            android:maxLines="2"-->
+<!--            android:textSize="16sp"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/mountain_image_view"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            tools:text="@tools:sample/lorem/random" />-->
 
         <ImageView
-            android:id="@+id/mountain_image_view"
+            android:id="@+id/item_mountain_image"
             android:layout_width="362dp"
             android:layout_height="221dp"
             android:layout_marginEnd="4dp"
