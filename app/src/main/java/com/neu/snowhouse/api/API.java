@@ -2,7 +2,9 @@ package com.neu.snowhouse.api;
 
 import com.neu.snowhouse.model.request.CommentRequestModel;
 import com.neu.snowhouse.model.response.CommentResponseModel;
+import com.neu.snowhouse.model.response.LiteMountainResponseModel;
 import com.neu.snowhouse.model.response.LitePostResponseModel;
+import com.neu.snowhouse.model.response.MountainResponseModel;
 import com.neu.snowhouse.model.response.PostResponseModel;
 import com.neu.snowhouse.model.request.UserLoginRequestModel;
 import com.neu.snowhouse.model.request.UserRegisterRequestModel;
@@ -102,4 +104,16 @@ public interface API {
     // POST request to dislike the comment
     @POST("comment/dislike/{commentId}/{currentUser}")
     Call<ResponseBody> dislikeComment(@Path("commentId") int commentId, @Path("currentUser") String currentUser);
+
+    // GET request to get all mountains
+    @GET("mountain/all")
+    Call<List<LiteMountainResponseModel>> getAllMountains();
+
+    // GET request to get a mountain by its ID
+    @GET("mountain/{mountainId}/{currentUser}")
+    Call<MountainResponseModel> getMountainById(@Path("mountainId") int mountainId, @Path("currentUser") String currentUser);
+
+    // POST request to rate the mountain
+    @POST("mountain/{mountainId}/{currentUser}/{rating}")
+    Call<ResponseBody> rateMountain(@Path("mountainId") int mountainId, @Path("currentUser") String currentUser, @Path("rating") int rating);
 }

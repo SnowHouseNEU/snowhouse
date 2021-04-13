@@ -2,75 +2,74 @@ package com.neu.snowhouse.ui.home;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.neu.snowhouse.R;
-import com.neu.snowhouse.databinding.FragmentHomeBinding;
-import com.neu.snowhouse.ui.mountainInfo.MountainInfoFragment;
+import com.neu.snowhouse.api.API;
+import com.neu.snowhouse.api.RetrofitClient;
+import com.neu.snowhouse.model.response.LiteMountainResponseModel;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class HomeFragment extends Fragment implements HomeAdapter.ItemClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
-    ArrayList<MountainData> dataHolder;
-
-    public HomeFragment() {
-        // Required empty public constructor
-    }
-
-    public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
-        return fragment;
-    }
+    MountainAdapter mountainAdapter;
+    ArrayList<LiteMountainResponseModel> mountains = new ArrayList<>();
+    API api = RetrofitClient.getInstance().getAPI();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        buildListData();
-        initRecylerView(view);
-
+        initRecyclerView(view);
         return view;
     }
 
-    private void initRecylerView(View view) {
+    private void initRecyclerView(View view) {
         recyclerView = view.findViewById(R.id.home_mountain_recycler_view);
+        mountainAdapter = new MountainAdapter(mountains);
+        getMountains();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        HomeAdapter adapter = new HomeAdapter(dataHolder, this);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mountainAdapter);
     }
 
-    private void buildListData() {
-        dataHolder = new ArrayList<>();
+    private void getMountains() {
+        Call<List<LiteMountainResponseModel>> fetchMountains = api.getAllMountains();
+        fetchMountains.enqueue(new Callback<List<LiteMountainResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LiteMountainResponseModel>> call, Response<List<LiteMountainResponseModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    mountains = (ArrayList<LiteMountainResponseModel>) response.body();
+                    mountainAdapter.updateAdapter(mountains);
+                }
+                if (!response.isSuccessful() && response.errorBody() != null) {
+                    try {
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-        MountainData crystal = new MountainData(R.drawable.crystal_mountain, "Crystal Mountain", "Crystal information");
-        MountainData stevens = new MountainData(R.drawable.stevens_pass, "Stevens Pass", "Stevens Pass information");
-        MountainData snoqualmie = new MountainData(R.drawable.summit_at_snoqualmie, "Summit at Snoqualmie", "Snoqualmie informaiton");
-
-        dataHolder.add(crystal);
-        dataHolder.add(stevens);
-        dataHolder.add(snoqualmie);
-    }
-
-    @Override
-    public void onItemClick(MountainData data) {
-        Fragment fragment = MountainInfoFragment.newInstance(data.getTitle());
-
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment, fragment, "fragment_mountain_info");
-        transaction.addToBackStack(null);
-        transaction.commit();
+            @Override
+            public void onFailure(Call<List<LiteMountainResponseModel>> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
