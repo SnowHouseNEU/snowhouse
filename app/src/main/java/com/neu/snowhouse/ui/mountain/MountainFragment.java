@@ -1,5 +1,6 @@
 package com.neu.snowhouse.ui.mountain;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -40,6 +41,10 @@ public class MountainFragment extends Fragment {
     SliderAdapter sliderAdapter;
     TextView mountainName;
     TextView mountainDesc;
+    TextView mountainTicket;
+    TextView mountainWeather;
+    TextView mountainHours;
+    TextView mountainAddress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,10 @@ public class MountainFragment extends Fragment {
         mountainId = getArguments().getInt("mountainId");
         mountainName = view.findViewById(R.id.mountain_name);
         mountainDesc = view.findViewById(R.id.mountain_desc);
+        mountainTicket = view.findViewById(R.id.mountain_ticket);
+        mountainWeather = view.findViewById(R.id.mountain_weather);
+        mountainHours = view.findViewById(R.id.mountain_hours);
+        mountainAddress = view.findViewById(R.id.mountain_address);
         sliderView = view.findViewById(R.id.imageSlider);
         sliderAdapter = new SliderAdapter(getContext());
         sliderView.setSliderAdapter(sliderAdapter);
@@ -77,6 +86,7 @@ public class MountainFragment extends Fragment {
             public void onResponse(Call<MountainResponseModel> call, Response<MountainResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Thread thread = new Thread(new Runnable() {
+                        @SuppressLint("SetTextI18n")
                         @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
                         public void run() {
@@ -90,6 +100,10 @@ public class MountainFragment extends Fragment {
                             textHandler.post(() -> {
                                 mountainName.setText(mountainResponseModel.getMountainName());
                                 mountainDesc.setText(mountainResponseModel.getDescription());
+                                mountainTicket.setText(mountainResponseModel.getTicketInfo());
+                                mountainWeather.setText("Weather: " + mountainResponseModel.getWeather().toString());
+                                mountainHours.setText("Open Hours: " + mountainResponseModel.getOpenHour());
+                                mountainAddress.setText("Address: " + mountainResponseModel.getAddress());
                             });
                         }
                     });
