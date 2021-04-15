@@ -1,6 +1,7 @@
 package com.neu.snowhouse.ui.mountain;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -29,6 +30,8 @@ import com.neu.snowhouse.api.API;
 import com.neu.snowhouse.api.RetrofitClient;
 import com.neu.snowhouse.model.response.Image;
 import com.neu.snowhouse.model.response.MountainResponseModel;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 
 import java.io.IOException;
@@ -43,6 +46,9 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     String userName;
     int mountainId;
     API api = RetrofitClient.getInstance().getAPI();
+    List<Image> images = new ArrayList<>();
+    final Object monitor = new Object();
+    boolean imageReady = false;
     private final Handler textHandler = new Handler();
     SliderView sliderView;
     SliderAdapter sliderAdapter;
@@ -64,12 +70,7 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mountain, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_mountain, container, false);
         userName = SessionManagement.getUserName(getContext());
         mountainId = getArguments().getInt("mountainId");
         mountainName = view.findViewById(R.id.mountain_name);
@@ -81,55 +82,62 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         sliderView = view.findViewById(R.id.imageSlider);
         sliderAdapter = new SliderAdapter(getContext());
         sliderView.setSliderAdapter(sliderAdapter);
-        getMountain();
+        thread1.start();
+        thread2.start();
+        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM); //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
         sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+        sliderView.setIndicatorSelectedColor(Color.WHITE);
+        sliderView.setIndicatorUnselectedColor(Color.GRAY);
         sliderView.setScrollTimeInSec(8); //set scroll delay in seconds :
         sliderView.startAutoCycle();
 
         mapView = view.findViewById(R.id.mapsView);
-        if(mapView != null) {
+        if (mapView != null) {
             mapView.onCreate(null);
             mapView.onResume();
             mapView.getMapAsync(this);
         }
+        return view;
     }
+
+    Thread thread1 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            getMountain();
+        }
+    });
+
+    Thread thread2 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            updateImage();
+        }
+    });
 
     private void getMountain() {
         Call<MountainResponseModel> fetchMountain = api.getMountainById(mountainId, userName);
-        List<Image> images = new ArrayList<>();
         fetchMountain.enqueue(new Callback<MountainResponseModel>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(Call<MountainResponseModel> call, Response<MountainResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Thread thread = new Thread(new Runnable() {
-                        @SuppressLint("SetTextI18n")
-                        @RequiresApi(api = Build.VERSION_CODES.O)
-                        @Override
-                        public void run() {
-                            MountainResponseModel mountainResponseModel = response.body();
-                            Image image1 = mountainResponseModel.getImage1();
-                            Image image2 = mountainResponseModel.getImage2();
-                            Image image3 = mountainResponseModel.getImage3();
-                            images.add(image1);
-                            images.add(image2);
-                            images.add(image3);
-                            textHandler.post(() -> {
-                                mountainName.setText(mountainResponseModel.getMountainName());
-                                mountainDesc.setText(mountainResponseModel.getDescription());
-                                mountainTicket.setText(mountainResponseModel.getTicketInfo());
-                                mountainWeather.setText("Weather: " + mountainResponseModel.getWeather().toString());
-                                mountainHours.setText("Open Hours: " + mountainResponseModel.getOpenHour());
-                                mountainAddress.setText("Address: " + mountainResponseModel.getAddress());
-                            });
-                        }
-                    });
-                    thread.start();
-                    try {
-                        thread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    synchronized (monitor) {
+                        MountainResponseModel mountainResponseModel = response.body();
+                        textHandler.post(() -> {
+                            mountainName.setText(mountainResponseModel.getMountainName());
+                            mountainDesc.setText(mountainResponseModel.getDescription());
+                            mountainTicket.setText(mountainResponseModel.getTicketInfo());
+                            mountainWeather.setText("Weather: " + mountainResponseModel.getWeather().toString());
+                            mountainHours.setText("Open Hours: " + mountainResponseModel.getOpenHour());
+                            mountainAddress.setText("Address: " + mountainResponseModel.getAddress());
+                        });
+                        images.add(mountainResponseModel.getImage1());
+                        images.add(mountainResponseModel.getImage2());
+                        images.add(mountainResponseModel.getImage3());
+                        imageReady = true;
+                        monitor.notify();
                     }
-                    sliderAdapter.renewItems(images);
                 }
                 if (!response.isSuccessful() && response.errorBody() != null) {
                     try {
@@ -148,11 +156,28 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    private void updateImage() {
+        synchronized (monitor) {
+            while (!imageReady) {
+                try {
+                    monitor.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sliderAdapter.renewItems(images);
+                }
+            });
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getContext());
         map = googleMap;
-
         LatLng stevensPass = new LatLng(47.74499702, -121.09333296);
         map.addMarker(new MarkerOptions().position(stevensPass).title("Marker in Stevens Pass"));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(stevensPass, 15f));
