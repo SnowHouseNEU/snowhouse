@@ -58,8 +58,6 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.ImageViewHold
         byte[] bytes = Base64.getDecoder().decode(mSliderItems.get(position).getPicture());
         bmp[0] = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         viewHolder.image.setImageBitmap(bmp[0]);
-        String message = (position + 1) + "/" + getCount();
-        viewHolder.text.setText(message);
     }
 
     @Override
@@ -71,12 +69,10 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.ImageViewHold
     static class ImageViewHolder extends SliderViewAdapter.ViewHolder {
 
         ImageView image;
-        TextView text;
 
         public ImageViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image_item);
-            text = itemView.findViewById(R.id.text_item);
         }
     }
 }
