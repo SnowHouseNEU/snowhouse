@@ -2,12 +2,8 @@ package com.neu.snowhouse.ui.mountain;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -48,7 +44,7 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     API api = RetrofitClient.getInstance().getAPI();
     List<Image> images = new ArrayList<>();
     final Object monitor = new Object();
-    boolean imageReady = false;
+    boolean dataReady = false;
     private final Handler textHandler = new Handler();
     SliderView sliderView;
     SliderAdapter sliderAdapter;
@@ -58,6 +54,8 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     TextView mountainWeather;
     TextView mountainHours;
     TextView mountainAddress;
+    double latitude;
+    double longitude;
     GoogleMap map;
     MapView mapView;
 
@@ -72,6 +70,7 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_mountain, container, false);
         userName = SessionManagement.getUserName(getContext());
+        assert getArguments() != null;
         mountainId = getArguments().getInt("mountainId");
         mountainName = view.findViewById(R.id.mountain_name);
         mountainDesc = view.findViewById(R.id.mountain_desc);
@@ -83,7 +82,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         sliderAdapter = new SliderAdapter(getContext());
         sliderView.setSliderAdapter(sliderAdapter);
         thread1.start();
-        thread2.start();
         sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM); //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
         sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
         sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
@@ -93,11 +91,9 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         sliderView.startAutoCycle();
 
         mapView = view.findViewById(R.id.mapsView);
-        if (mapView != null) {
-            mapView.onCreate(null);
-            mapView.onResume();
-            mapView.getMapAsync(this);
-        }
+        mapView.onCreate(null);
+        mapView.onResume();
+
         return view;
     }
 
@@ -108,13 +104,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         }
     });
 
-    Thread thread2 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            updateImage();
-        }
-    });
-
     private void getMountain() {
         Call<MountainResponseModel> fetchMountain = api.getMountainById(mountainId, userName);
         fetchMountain.enqueue(new Callback<MountainResponseModel>() {
@@ -122,22 +111,31 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<MountainResponseModel> call, Response<MountainResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    synchronized (monitor) {
-                        MountainResponseModel mountainResponseModel = response.body();
-                        textHandler.post(() -> {
-                            mountainName.setText(mountainResponseModel.getMountainName());
-                            mountainDesc.setText(mountainResponseModel.getDescription());
-                            mountainTicket.setText(mountainResponseModel.getTicketInfo());
-                            mountainWeather.setText("Weather: " + mountainResponseModel.getWeather().toString());
-                            mountainHours.setText("Open Hours: " + mountainResponseModel.getOpenHour());
-                            mountainAddress.setText("Address: " + mountainResponseModel.getAddress());
-                        });
+                    MountainResponseModel mountainResponseModel = response.body();
+                    textHandler.post(() -> {
+                        mountainName.setText(mountainResponseModel.getMountainName());
+                        mountainDesc.setText(mountainResponseModel.getDescription());
+                        mountainTicket.setText(mountainResponseModel.getTicketInfo());
+                        mountainWeather.setText("Weather: " + mountainResponseModel.getWeather().toString());
+                        mountainHours.setText("Open Hours: " + mountainResponseModel.getOpenHour());
+                        mountainAddress.setText("Address: " + mountainResponseModel.getAddress());
                         images.add(mountainResponseModel.getImage1());
                         images.add(mountainResponseModel.getImage2());
                         images.add(mountainResponseModel.getImage3());
-                        imageReady = true;
-                        monitor.notify();
-                    }
+                        sliderAdapter.renewItems(images);
+                    });
+                    latitude = mountainResponseModel.getLatitude();
+                    longitude = mountainResponseModel.getLongitude();
+                    System.out.println(111);
+                    System.out.println(latitude);
+                    System.out.println(longitude);
+                    assert getActivity() != null;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mapView.getMapAsync(MountainFragment.this);
+                        }
+                    });
                 }
                 if (!response.isSuccessful() && response.errorBody() != null) {
                     try {
@@ -156,29 +154,15 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void updateImage() {
-        synchronized (monitor) {
-            while (!imageReady) {
-                try {
-                    monitor.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    sliderAdapter.renewItems(images);
-                }
-            });
-        }
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        assert getContext() != null;
         MapsInitializer.initialize(getContext());
         map = googleMap;
-        LatLng stevensPass = new LatLng(47.74499702, -121.09333296);
+        System.out.println(222);
+        System.out.println(latitude);
+        System.out.println(longitude);
+        LatLng stevensPass = new LatLng(latitude, longitude);
         map.addMarker(new MarkerOptions().position(stevensPass).title("Marker in Stevens Pass"));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(stevensPass, 15f));
     }

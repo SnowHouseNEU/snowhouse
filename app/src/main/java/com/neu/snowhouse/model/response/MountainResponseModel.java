@@ -15,6 +15,8 @@ public class MountainResponseModel {
     private int rateCount = 0;
     private double rating = 0.0;
     private int currentRating = 0;
+    private double latitude;
+    private double longitude;
 
     public int getMountainId() {
         return mountainId;
@@ -118,5 +120,21 @@ public class MountainResponseModel {
 
     public void setCurrentRating(int currentRating) {
         this.currentRating = currentRating;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

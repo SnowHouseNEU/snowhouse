@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Mountain Description: Random Random Random"
+            android:text="Mountain Description:"
             android:textSize="20sp" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Ticket information: Random Random Random"
+            android:text="Ticket information:"
             android:textSize="20sp" />
 
         <TextView
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Weather information: Random Random Random"
+            android:text="Weather information:"
             android:textSize="20sp" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Open Hours information: Random Random Random"
+            android:text="Open Hours information:"
             android:textSize="20sp" />
 
         <TextView
@@ -89,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Mountain Address: Random Random Random"
+            android:text="Mountain Address:"
             android:layout_marginBottom="24dp"
             android:textSize="20sp" />
     </LinearLayout>
