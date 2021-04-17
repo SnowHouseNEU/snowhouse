@@ -52,4 +52,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
     implementation 'com.github.smarteist:autoimageslider:1.4.0-appcompat'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }
