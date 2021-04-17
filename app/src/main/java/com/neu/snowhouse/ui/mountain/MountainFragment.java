@@ -43,8 +43,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     int mountainId;
     API api = RetrofitClient.getInstance().getAPI();
     List<Image> images = new ArrayList<>();
-    final Object monitor = new Object();
-    boolean dataReady = false;
     private final Handler textHandler = new Handler();
     SliderView sliderView;
     SliderAdapter sliderAdapter;
@@ -126,9 +124,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
                     });
                     latitude = mountainResponseModel.getLatitude();
                     longitude = mountainResponseModel.getLongitude();
-                    System.out.println(111);
-                    System.out.println(latitude);
-                    System.out.println(longitude);
                     assert getActivity() != null;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -159,9 +154,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         assert getContext() != null;
         MapsInitializer.initialize(getContext());
         map = googleMap;
-        System.out.println(222);
-        System.out.println(latitude);
-        System.out.println(longitude);
         LatLng stevensPass = new LatLng(latitude, longitude);
         map.addMarker(new MarkerOptions().position(stevensPass).title("Marker in Stevens Pass"));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(stevensPass, 15f));
