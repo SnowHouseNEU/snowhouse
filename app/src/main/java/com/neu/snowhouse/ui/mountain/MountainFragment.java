@@ -56,7 +56,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     TextView mountainHours;
     TextView mountainAddress;
     RatingBar ratingBar;
-    Button rateBtn;
     double latitude;
     double longitude;
     GoogleMap map;
@@ -82,7 +81,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         mountainHours = view.findViewById(R.id.mountain_hours);
         mountainAddress = view.findViewById(R.id.mountain_address);
         ratingBar = view.findViewById(R.id.rating_bar);
-        rateBtn = view.findViewById(R.id.rating_btn);
         sliderView = view.findViewById(R.id.imageSlider);
         sliderAdapter = new SliderAdapter(getContext());
         sliderView.setSliderAdapter(sliderAdapter);
@@ -98,19 +96,21 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         mapView = view.findViewById(R.id.mapsView);
         mapView.onCreate(null);
         mapView.onResume();
-
-        rateBtn.setOnClickListener(v -> {
-            String s = String.valueOf(ratingBar.getRating());
-            Toast.makeText(getContext(), s + "stars", Toast.LENGTH_SHORT).show();
-        });
-
         return view;
     }
+
 
     Thread thread1 = new Thread(new Runnable() {
         @Override
         public void run() {
             getMountain();
+        }
+    });
+
+    Thread thread2 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            rateMountain();
         }
     });
 
@@ -129,6 +129,7 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
                         mountainWeather.setText("Weather: " + mountainResponseModel.getWeather().toString());
                         mountainHours.setText("Open Hours: " + mountainResponseModel.getOpenHour());
                         mountainAddress.setText("Address: " + mountainResponseModel.getAddress());
+                        ratingBar.setRating(mountainResponseModel.getCurrentRating());
                         images.add(mountainResponseModel.getImage1());
                         images.add(mountainResponseModel.getImage2());
                         images.add(mountainResponseModel.getImage3());
@@ -142,6 +143,45 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
                         public void run() {
                             mapView.getMapAsync(MountainFragment.this);
                         }
+                    });
+                    ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                        public void onRatingChanged(RatingBar ratingBar, float rating,
+                                                    boolean fromUser) {
+                            if (fromUser) {
+                                if (rating < 1.0f) ratingBar.setRating(1.0f);
+                                Toast.makeText(getContext(), "Rating: " + ratingBar.getRating(), Toast.LENGTH_SHORT).show();
+                                thread2.start();
+                            }
+                        }
+                    });
+                }
+                if (!response.isSuccessful() && response.errorBody() != null) {
+                    try {
+                        Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MountainResponseModel> call, Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(getContext(), "Request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void rateMountain() {
+        Call<MountainResponseModel> rateMountain = api.rateMountain(mountainId, userName, (int) ratingBar.getRating());
+        rateMountain.enqueue(new Callback<MountainResponseModel>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(Call<MountainResponseModel> call, Response<MountainResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    MountainResponseModel mountainResponseModel = response.body();
+                    textHandler.post(() -> {
+                        ratingBar.setRating(mountainResponseModel.getCurrentRating());
                     });
                 }
                 if (!response.isSuccessful() && response.errorBody() != null) {
@@ -166,8 +206,8 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         assert getContext() != null;
         MapsInitializer.initialize(getContext());
         map = googleMap;
-        LatLng stevensPass = new LatLng(latitude, longitude);
-        map.addMarker(new MarkerOptions().position(stevensPass).title("Marker in Stevens Pass"));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(stevensPass, 15f));
+        LatLng location = new LatLng(latitude, longitude);
+        map.addMarker(new MarkerOptions().position(location).title(""));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f));
     }
 }
