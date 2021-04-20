@@ -2,6 +2,7 @@ package com.neu.snowhouse.ui.mountain;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.media.Rating;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,8 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +55,8 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
     TextView mountainWeather;
     TextView mountainHours;
     TextView mountainAddress;
+    RatingBar ratingBar;
+    Button rateBtn;
     double latitude;
     double longitude;
     GoogleMap map;
@@ -76,6 +81,8 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         mountainWeather = view.findViewById(R.id.mountain_weather);
         mountainHours = view.findViewById(R.id.mountain_hours);
         mountainAddress = view.findViewById(R.id.mountain_address);
+        ratingBar = view.findViewById(R.id.rating_bar);
+        rateBtn = view.findViewById(R.id.rating_btn);
         sliderView = view.findViewById(R.id.imageSlider);
         sliderAdapter = new SliderAdapter(getContext());
         sliderView.setSliderAdapter(sliderAdapter);
@@ -91,6 +98,11 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         mapView = view.findViewById(R.id.mapsView);
         mapView.onCreate(null);
         mapView.onResume();
+
+        rateBtn.setOnClickListener(v -> {
+            String s = String.valueOf(ratingBar.getRating());
+            Toast.makeText(getContext(), s + "stars", Toast.LENGTH_SHORT).show();
+        });
 
         return view;
     }

@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Mountain Description:"
+            android:text="@string/mountain_description"
             android:textSize="20sp" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Ticket information:"
+            android:text="@string/ticket_information"
             android:textSize="20sp" />
 
         <TextView
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Weather information:"
+            android:text="@string/weather_information"
             android:textSize="20sp" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Open Hours information:"
+            android:text="@string/open_hours_information"
             android:textSize="20sp" />
 
         <TextView
@@ -89,9 +89,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Mountain Address:"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/mountain_address"
             android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/please_rate_the_mountain"
+            android:textColor="@color/blue"
+            android:textSize="15sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.5" />
+
+            <Button
+                android:id="@+id/rating_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:backgroundTint="#A5A5A6"
+                android:text="@string/rate" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 </ScrollView>
