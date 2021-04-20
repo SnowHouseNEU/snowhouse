@@ -107,13 +107,6 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
         }
     });
 
-    Thread thread2 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            rateMountain();
-        }
-    });
-
     private void getMountain() {
         Call<MountainResponseModel> fetchMountain = api.getMountainById(mountainId, userName);
         fetchMountain.enqueue(new Callback<MountainResponseModel>() {
@@ -150,7 +143,7 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
                             if (fromUser) {
                                 if (rating < 1.0f) ratingBar.setRating(1.0f);
                                 Toast.makeText(getContext(), "Rating: " + ratingBar.getRating(), Toast.LENGTH_SHORT).show();
-                                thread2.start();
+                                rateMountain();
                             }
                         }
                     });
@@ -179,10 +172,7 @@ public class MountainFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<MountainResponseModel> call, Response<MountainResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    MountainResponseModel mountainResponseModel = response.body();
-                    textHandler.post(() -> {
-                        ratingBar.setRating(mountainResponseModel.getCurrentRating());
-                    });
+                    // do nothing
                 }
                 if (!response.isSuccessful() && response.errorBody() != null) {
                     try {
