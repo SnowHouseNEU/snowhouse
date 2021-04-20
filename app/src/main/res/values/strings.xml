@@ -26,4 +26,14 @@
     <string name="tag_input">Enter up to three tags separated by comma</string>
     <string name="upload_image">Upload an Image</string>
     <string name="post">Add Post!</string>
+    <string name="mountain_description">Mountain Description:</string>
+    <string name="ticket_information">Ticket information:</string>
+    <string name="weather_information">Weather information:</string>
+    <string name="open_hours_information">Open Hours information:</string>
+    <string name="mountain_address">Mountain Address:</string>
+    <string name="please_rate_the_mountain">Please rate the mountain</string>
+    <string name="rate">Rate</string>
+    <string name="Avg_Rate">Rating:</string>
+    <string name="mountain_image">mountain image</string>
+    <string name="default_rate">5/5</string>
 </resources>
