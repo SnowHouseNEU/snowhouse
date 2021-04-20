@@ -1,5 +1,6 @@
 package com.neu.snowhouse.ui.home;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,6 +38,7 @@ public class MountainAdapter extends RecyclerView.Adapter<MountainAdapter.Mounta
         return new MountainViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MountainAdapter.MountainViewHolder holder, int position) {
@@ -43,7 +46,10 @@ public class MountainAdapter extends RecyclerView.Adapter<MountainAdapter.Mounta
         byte[] bytes = Base64.getDecoder().decode(mountains.get(position).getImage().getPicture());
         bmp[0] = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         holder.imageView.setImageBitmap(bmp[0]);
-        holder.titleTextView.setText(mountains.get(position).getMountainName());
+        holder.mountainName.setText(mountains.get(position).getMountainName());
+        holder.mountainRate.setText(String.valueOf(mountains.get(position).getRating()));
+        holder.mountainRateBar.setRating((float) mountains.get(position).getRating());
+        holder.mountainRateCount.setText(mountains.get(position).getRateCount() + " Ratings");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,13 +71,19 @@ public class MountainAdapter extends RecyclerView.Adapter<MountainAdapter.Mounta
     }
 
     static class MountainViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView;
+        TextView mountainName;
         ImageView imageView;
+        TextView mountainRate;
+        RatingBar mountainRateBar;
+        TextView mountainRateCount;
 
         public MountainViewHolder(View itemView) {
             super(itemView);
-            titleTextView = itemView.findViewById(R.id.item_mountain_name);
+            mountainName = itemView.findViewById(R.id.item_mountain_name);
             imageView = itemView.findViewById(R.id.item_mountain_image);
+            mountainRate = itemView.findViewById(R.id.item_mountain_rate);
+            mountainRateBar = itemView.findViewById(R.id.item_mountain_rate_bar);
+            mountainRateCount = itemView.findViewById(R.id.item_mountain_rate_count);
         }
     }
 }

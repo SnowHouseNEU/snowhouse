@@ -93,32 +93,33 @@
             android:text="@string/mountain_address"
             android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/please_rate_the_mountain"
-            android:textColor="@color/blue"
-            android:textSize="15sp" />
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp">
+
+            <TextView
+                android:id="@+id/tap_to_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_to_rate"
+                android:textColor="@color/blue"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="25dp"
+                android:textStyle="italic"
+                android:textSize="20sp" />
 
             <RatingBar
                 android:id="@+id/rating_bar"
+                style="@android:style/Widget.Material.RatingBar.Indicator"
+                android:isIndicator="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/tap_to_start"
+                android:theme="@style/RatingBar"
                 android:numStars="5"
-                android:stepSize="0.5"
-                android:rating="1"/>
-
-            <Button
-                android:id="@+id/rating_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:backgroundTint="#A5A5A6"
-                android:text="@string/rate" />
+                android:rating="0.0"
+                android:stepSize="1" />
 
         </RelativeLayout>
     </LinearLayout>
