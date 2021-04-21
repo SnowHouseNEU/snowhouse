@@ -206,8 +206,8 @@ public class PostFragment extends Fragment {
                     }
                     if (bmp[0] != null) {
                         ViewGroup.LayoutParams params = image.getLayoutParams();
-                        params.width = 500;
-                        params.height = 500;
+                        params.width = 300;
+                        params.height = 300;
                         image.setLayoutParams(params);
                         image.setImageBitmap(bmp[0]);
                     }

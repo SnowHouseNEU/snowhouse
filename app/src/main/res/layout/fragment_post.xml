@@ -57,7 +57,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/post_content"
             android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
             app:srcCompat="@android:drawable/ic_menu_gallery" />
 
         <ImageButton
@@ -130,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/button_newComment"
-            android:layout_margin="10dp" />
+            android:layout_marginBottom="25dp" />
 
     </RelativeLayout>
 
