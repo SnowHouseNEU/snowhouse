@@ -1,6 +1,7 @@
 package com.neu.snowhouse.api;
 
 import com.neu.snowhouse.model.request.CommentRequestModel;
+import com.neu.snowhouse.model.request.PostRequestModel;
 import com.neu.snowhouse.model.response.CommentResponseModel;
 import com.neu.snowhouse.model.response.LiteMountainResponseModel;
 import com.neu.snowhouse.model.response.LitePostResponseModel;
@@ -45,14 +46,18 @@ public interface API {
     Call<ResponseBody> deleteAccount(@Body UserDropAccountRequestModel user);
 
     // POST request to upload a post without image to the backend
-    @Multipart
-    @POST("post/")
-    Call<ResponseBody> uploadRawPost(@Part("post") RequestBody jsonPost);
+//    @Multipart
+//    @POST("post/")
+//    Call<ResponseBody> uploadRawPost(@Part("post") RequestBody jsonPost);
 
     // POST request to upload a post with image to the backend
-    @Multipart
-    @POST("post/withImage")
-    Call<ResponseBody> uploadPostWithImage(@Part MultipartBody.Part image, @Part("post") RequestBody jsonPost);
+//    @Multipart
+//    @POST("post/withImage")
+//    Call<ResponseBody> uploadPostWithImage(@Part MultipartBody.Part image, @Part("post") RequestBody jsonPost);
+
+    // POST request to upload a post
+    @POST("post/")
+    Call<ResponseBody> uploadPost(@Body PostRequestModel postRequestModel);
 
     // GET request to get a post by its ID
     @GET("post/{currentUser}/{postId}")

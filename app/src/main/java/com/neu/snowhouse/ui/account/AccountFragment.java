@@ -342,7 +342,6 @@ public class AccountFragment extends Fragment {
                 cursor.moveToFirst();
                 int indexImage = cursor.getColumnIndex(imageProjection[0]);
                 part_image = cursor.getString(indexImage);
-                part_image = verify(part_image);
                 Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
@@ -403,24 +402,5 @@ public class AccountFragment extends Fragment {
             mDatabaseHelper.updateUserImage(userName, picture);
         }
         mDatabaseHelper.close();
-    }
-
-    private String verify(String path) {
-        String[] arr = path.split("/");
-        if (!arr[3].equals("DCIM")) {
-            return path;
-        }
-        String res = "/";
-        res += arr[0] + "/";
-        res += arr[1] + "/";
-        res += arr[2] + "/";
-        res += "Pictures" + "/";
-        for (int i = 5; i < arr.length; i++) {
-            res += arr[i];
-            if (i != arr.length - 1) {
-                res += "/";
-            }
-        }
-        return res;
     }
 }
