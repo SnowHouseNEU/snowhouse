@@ -182,6 +182,7 @@ public class AddFragment extends Fragment {
                 cursor.moveToFirst();
                 int indexImage = cursor.getColumnIndex(imageProjection[0]);
                 part_image = cursor.getString(indexImage);
+                part_image = verify(part_image);
                 imgPath.setText(part_image);                                                        // Get the image file absolute path
                 Bitmap bitmap = null;
                 try {
@@ -218,6 +219,25 @@ public class AddFragment extends Fragment {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+
+    private String verify(String path) {
+        String[] arr = path.split("/");
+        if (!arr[3].equals("DCIM")) {
+            return path;
+        }
+        String res = "/";
+        res += arr[0] + "/";
+        res += arr[1] + "/";
+        res += arr[2] + "/";
+        res += "Pictures" + "/";
+        for (int i = 5; i < arr.length; i++) {
+            res += arr[i];
+            if (i != arr.length - 1) {
+                res += "/";
+            }
+        }
+        return res;
     }
 }
 
