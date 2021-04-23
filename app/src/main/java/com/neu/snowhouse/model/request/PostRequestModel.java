@@ -1,5 +1,7 @@
 package com.neu.snowhouse.model.request;
 
+import com.neu.snowhouse.model.response.Image;
+
 public class PostRequestModel {
     private String userName;
     private String title;
@@ -7,6 +9,7 @@ public class PostRequestModel {
     private String tag1;
     private String tag2;
     private String tag3;
+    private String jsonImage;
 
     public PostRequestModel() {
     }
@@ -57,5 +60,13 @@ public class PostRequestModel {
 
     public void setTag3(String tag3) {
         this.tag3 = tag3;
+    }
+
+    public String getJsonImage() {
+        return jsonImage;
+    }
+
+    public void setJsonImage(String jsonImage) {
+        this.jsonImage = jsonImage;
     }
 }

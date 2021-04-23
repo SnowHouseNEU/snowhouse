@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
@@ -15,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -30,9 +32,12 @@ import com.neu.snowhouse.SessionManagement;
 import com.neu.snowhouse.api.API;
 import com.neu.snowhouse.api.RetrofitClient;
 import com.neu.snowhouse.model.request.PostRequestModel;
+import com.neu.snowhouse.model.response.Image;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -42,15 +47,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class AddFragment extends Fragment {
 
     API api = RetrofitClient.getInstance().getAPI();
     // for image chosen
-    TextView imgPath;
     private static final int PICK_IMAGE_REQUEST = 9544;
-    ImageView image;
+    TextView imgPath;
     Uri selectedImage;
     String part_image;
+    ImageView image;
+    String jsonImage = "";
+
     // for construct the post
     String userName;
     EditText editTitle;
@@ -129,22 +137,11 @@ public class AddFragment extends Fragment {
         post.setTag1(tag1);
         post.setTag2(tag2);
         post.setTag2(tag3);
-        Gson gson = new Gson();
-        RequestBody jsonPost = RequestBody.create(MediaType.parse("multipart/form-data"), gson.toJson(post));
-        Call<ResponseBody> upload;
-        if (part_image == null) {
-            // the user doesn't choose a image
-            upload = api.uploadRawPost(jsonPost);
-        } else {
-            // the user chooses a image
-            File imageFile = new File(part_image);                                                          // Create a file using the absolute path of the image
-            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), imageFile);
-            MultipartBody.Part partImage = MultipartBody.Part.createFormData("file", imageFile.getName(), reqBody);
-            upload = api.uploadPostWithImage(partImage, jsonPost);
-        }
+        post.setJsonImage(jsonImage);
+        Call<ResponseBody> addPost = api.uploadPost(post);
 
         // get the result
-        upload.enqueue(new Callback<ResponseBody>() {
+        addPost.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -182,7 +179,6 @@ public class AddFragment extends Fragment {
                 cursor.moveToFirst();
                 int indexImage = cursor.getColumnIndex(imageProjection[0]);
                 part_image = cursor.getString(indexImage);
-                part_image = verify(part_image);
                 imgPath.setText(part_image);                                                        // Get the image file absolute path
                 Bitmap bitmap = null;
                 try {
@@ -190,6 +186,10 @@ public class AddFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
+                byte[] bytes = stream.toByteArray();
+                jsonImage = Base64.getEncoder().encodeToString(bytes);
                 ViewGroup.LayoutParams params = image.getLayoutParams();
                 params.width = 500;
                 params.height = 500;
@@ -219,25 +219,6 @@ public class AddFragment extends Fragment {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
-    }
-
-    private String verify(String path) {
-        String[] arr = path.split("/");
-        if (!arr[3].equals("DCIM")) {
-            return path;
-        }
-        String res = "/";
-        res += arr[0] + "/";
-        res += arr[1] + "/";
-        res += arr[2] + "/";
-        res += "Pictures" + "/";
-        for (int i = 5; i < arr.length; i++) {
-            res += arr[i];
-            if (i != arr.length - 1) {
-                res += "/";
-            }
-        }
-        return res;
     }
 }
 
