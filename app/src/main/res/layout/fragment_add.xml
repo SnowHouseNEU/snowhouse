@@ -66,4 +66,14 @@
         android:text="@string/post"
         android:textSize="20sp" />
 
+    <ProgressBar
+        android:id="@+id/upload_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="170dp"
+        android:progress="25"
+        android:visibility="invisible" />
+
+
+
 </LinearLayout>
