@@ -369,6 +369,11 @@ public class AccountFragment extends Fragment {
 //                byte[] bytes = stream.toByteArray();
 //                storeUserImage(bytes);
                 thread.start();
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     });

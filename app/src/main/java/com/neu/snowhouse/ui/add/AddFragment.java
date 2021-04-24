@@ -68,6 +68,7 @@ public class AddFragment extends Fragment {
     EditText editTag;
     EditText editContent;
     Button uploadPostButton;
+    ProgressBar progressBar;
 
     private final Object monitor = new Object();
     boolean ready = false;
@@ -101,6 +102,7 @@ public class AddFragment extends Fragment {
         editTitle = view.findViewById(R.id.editTitle);
         editTag = view.findViewById(R.id.editTag);
         editContent = view.findViewById(R.id.editContent);
+        progressBar = view.findViewById(R.id.upload_progress);
         imgPath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,13 +112,16 @@ public class AddFragment extends Fragment {
         uploadPostButton = view.findViewById(R.id.uploadPostButton);
         uploadPostButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+                progressBar.setVisibility(View.VISIBLE);
                 uploadPost(v);
             }
         });
     }
 
     private void uploadPost(View view) {
+        uploadPostButton.setClickable(false);
         if (!withImage) {
             helper(view);
         } else {
@@ -171,6 +176,7 @@ public class AddFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         Toast.makeText(getContext(), response.body().string(), Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
                         Navigation.findNavController(view).navigate(R.id.add_forum);
                     } catch (IOException e) {
                         e.printStackTrace();
