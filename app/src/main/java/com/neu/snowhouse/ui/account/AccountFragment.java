@@ -358,6 +358,7 @@ public class AccountFragment extends Fragment {
                 storeUserImage(bytes);
             }
         }
+
     });
 
     // Method for starting the activity for selecting image from phone storage
@@ -406,11 +407,11 @@ public class AccountFragment extends Fragment {
     }
 
     private byte[] reshape(byte[] image) {
-        while (image.length > 500000) {
+        while (image.length > 1000000) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.5), (int) (bitmap.getHeight() * 0.5), true);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.1), (int) (bitmap.getHeight() * 0.1), true);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            resized.compress(Bitmap.CompressFormat.PNG, 10, stream);
+            resized.compress(Bitmap.CompressFormat.PNG, 1, stream);
             image = stream.toByteArray();
         }
         return image;

@@ -58,6 +58,7 @@ public class AddFragment extends Fragment {
     Uri selectedImage;
     String part_image;
     ImageView image;
+    byte[] bytes;
     String jsonImage = "";
 
     // for construct the post
@@ -138,6 +139,8 @@ public class AddFragment extends Fragment {
         post.setTag1(tag1);
         post.setTag2(tag2);
         post.setTag2(tag3);
+        bytes = reshape(bytes);
+        jsonImage = Base64.getEncoder().encodeToString(bytes);
         post.setJsonImage(jsonImage);
         Call<ResponseBody> addPost = api.uploadPost(post);
 
@@ -189,9 +192,10 @@ public class AddFragment extends Fragment {
                 }
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
-                byte[] bytes = stream.toByteArray();
-                bytes = reshape(bytes);
-                jsonImage = Base64.getEncoder().encodeToString(bytes);
+                bytes = stream.toByteArray();
+//                byte[] bytes = stream.toByteArray();
+//                bytes = reshape(bytes);
+//                jsonImage = Base64.getEncoder().encodeToString(bytes);
                 ViewGroup.LayoutParams params = image.getLayoutParams();
                 params.width = 500;
                 params.height = 500;
@@ -224,11 +228,11 @@ public class AddFragment extends Fragment {
     }
 
     private byte[] reshape(byte[] img) {
-        while (img.length > 500000) {
+        while (img.length > 1000000) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.5), (int) (bitmap.getHeight() * 0.5), true);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.1), (int) (bitmap.getHeight() * 0.1), true);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            resized.compress(Bitmap.CompressFormat.PNG, 10, stream);
+            resized.compress(Bitmap.CompressFormat.PNG, 1, stream);
             img = stream.toByteArray();
         }
         return img;
