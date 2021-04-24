@@ -69,6 +69,10 @@ public class AddFragment extends Fragment {
     EditText editContent;
     Button uploadPostButton;
 
+    private final Object monitor = new Object();
+    boolean ready = false;
+    boolean withImage = false;
+
     // Permissions for accessing the storage
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String[] PERMISSIONS_STORAGE = {
@@ -113,6 +117,23 @@ public class AddFragment extends Fragment {
     }
 
     private void uploadPost(View view) {
+        if (!withImage) {
+            helper(view);
+        } else {
+            synchronized (monitor) {
+                while (!ready) {
+                    try {
+                        monitor.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                helper(view);
+            }
+        }
+    }
+
+    private void helper(View view) {
         String title = editTitle.getText().toString().trim();
         String content = editContent.getText().toString().trim();
         String tags = editTag.getText().toString().trim();
@@ -140,11 +161,6 @@ public class AddFragment extends Fragment {
         post.setTag1(tag1);
         post.setTag2(tag2);
         post.setTag2(tag3);
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-//        byte[] bytes = stream.toByteArray();
-//        bytes = reshape(bytes);
-//        jsonImage = Base64.getEncoder().encodeToString(bytes);
         post.setJsonImage(jsonImage);
         Call<ResponseBody> addPost = api.uploadPost(post);
 
@@ -179,11 +195,15 @@ public class AddFragment extends Fragment {
     Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-            byte[] bytes = stream.toByteArray();
-            bytes = reshape(bytes);
-            jsonImage = Base64.getEncoder().encodeToString(bytes);
+            synchronized (monitor) {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+                byte[] bytes = stream.toByteArray();
+                bytes = reshape(bytes);
+                jsonImage = Base64.getEncoder().encodeToString(bytes);
+                ready = true;
+                monitor.notifyAll();
+            }
         }
     });
 
@@ -199,18 +219,11 @@ public class AddFragment extends Fragment {
                 int indexImage = cursor.getColumnIndex(imageProjection[0]);
                 part_image = cursor.getString(indexImage);
                 imgPath.setText(part_image);                                                        // Get the image file absolute path
-//                Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-//                bytes = stream.toByteArray();
-//                byte[] bytes = stream.toByteArray();
-//                bytes = reshape(bytes);
-//                jsonImage = Base64.getEncoder().encodeToString(bytes);
                 ViewGroup.LayoutParams params = image.getLayoutParams();
                 params.width = 500;
                 params.height = 500;
@@ -226,6 +239,7 @@ public class AddFragment extends Fragment {
         verifyStoragePermissions((Activity) view.getContext());
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        withImage = true;
         launchActivity.launch(intent);
     }
 
