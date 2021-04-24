@@ -353,7 +353,7 @@ public class AccountFragment extends Fragment {
 
                 // Store the image to the SQLite db
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
                 byte[] bytes = stream.toByteArray();
                 storeUserImage(bytes);
             }
@@ -409,7 +409,7 @@ public class AccountFragment extends Fragment {
     private byte[] reshape(byte[] image) {
         while (image.length > 1000000) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.1), (int) (bitmap.getHeight() * 0.1), true);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.05), (int) (bitmap.getHeight() * 0.05), true);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             resized.compress(Bitmap.CompressFormat.PNG, 1, stream);
             image = stream.toByteArray();

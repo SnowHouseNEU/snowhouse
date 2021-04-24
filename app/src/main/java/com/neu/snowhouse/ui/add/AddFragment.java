@@ -60,6 +60,7 @@ public class AddFragment extends Fragment {
     ImageView image;
     byte[] bytes;
     String jsonImage = "";
+    Bitmap bitmap = null;
 
     // for construct the post
     String userName;
@@ -139,6 +140,9 @@ public class AddFragment extends Fragment {
         post.setTag1(tag1);
         post.setTag2(tag2);
         post.setTag2(tag3);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+        byte[] bytes = stream.toByteArray();
         bytes = reshape(bytes);
         jsonImage = Base64.getEncoder().encodeToString(bytes);
         post.setJsonImage(jsonImage);
@@ -184,15 +188,15 @@ public class AddFragment extends Fragment {
                 int indexImage = cursor.getColumnIndex(imageProjection[0]);
                 part_image = cursor.getString(indexImage);
                 imgPath.setText(part_image);                                                        // Get the image file absolute path
-                Bitmap bitmap = null;
+//                Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
-                bytes = stream.toByteArray();
+//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+//                bytes = stream.toByteArray();
 //                byte[] bytes = stream.toByteArray();
 //                bytes = reshape(bytes);
 //                jsonImage = Base64.getEncoder().encodeToString(bytes);
@@ -230,7 +234,7 @@ public class AddFragment extends Fragment {
     private byte[] reshape(byte[] img) {
         while (img.length > 1000000) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.1), (int) (bitmap.getHeight() * 0.1), true);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.05), (int) (bitmap.getHeight() * 0.05), true);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             resized.compress(Bitmap.CompressFormat.PNG, 1, stream);
             img = stream.toByteArray();
