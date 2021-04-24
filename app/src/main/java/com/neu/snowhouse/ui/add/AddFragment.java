@@ -58,7 +58,7 @@ public class AddFragment extends Fragment {
     Uri selectedImage;
     String part_image;
     ImageView image;
-    byte[] bytes;
+//    byte[] bytes;
     String jsonImage = "";
     Bitmap bitmap = null;
 
@@ -140,11 +140,11 @@ public class AddFragment extends Fragment {
         post.setTag1(tag1);
         post.setTag2(tag2);
         post.setTag2(tag3);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-        byte[] bytes = stream.toByteArray();
-        bytes = reshape(bytes);
-        jsonImage = Base64.getEncoder().encodeToString(bytes);
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+//        byte[] bytes = stream.toByteArray();
+//        bytes = reshape(bytes);
+//        jsonImage = Base64.getEncoder().encodeToString(bytes);
         post.setJsonImage(jsonImage);
         Call<ResponseBody> addPost = api.uploadPost(post);
 
@@ -176,6 +176,17 @@ public class AddFragment extends Fragment {
         });
     }
 
+    Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+            byte[] bytes = stream.toByteArray();
+            bytes = reshape(bytes);
+            jsonImage = Base64.getEncoder().encodeToString(bytes);
+        }
+    });
+
     ActivityResultLauncher<Intent> launchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent data = result.getData();
@@ -205,6 +216,7 @@ public class AddFragment extends Fragment {
                 params.height = 500;
                 image.setLayoutParams(params);
                 image.setImageBitmap(bitmap);                                                       // Set the ImageView with the bitmap of the image
+                thread.start();
             }
         }
     });
