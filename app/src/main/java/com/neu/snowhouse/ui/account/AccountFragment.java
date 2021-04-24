@@ -78,7 +78,6 @@ public class AccountFragment extends Fragment {
     String part_image;
     CircleImageView image;
     DatabaseHelper mDatabaseHelper;
-    Bitmap bitmap = null;
 
     // Permissions for accessing the storage
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -332,17 +331,6 @@ public class AccountFragment extends Fragment {
         });
     }
 
-    Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            // Store the image to the SQLite db
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-            byte[] bytes = stream.toByteArray();
-            storeUserImage(bytes);
-        }
-    });
-
     ActivityResultLauncher<Intent> launchActivity = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent data = result.getData();
@@ -354,7 +342,7 @@ public class AccountFragment extends Fragment {
                 cursor.moveToFirst();
                 int indexImage = cursor.getColumnIndex(imageProjection[0]);
                 part_image = cursor.getString(indexImage);
-//                Bitmap bitmap = null;
+                Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImage);
                 } catch (IOException e) {
@@ -364,16 +352,10 @@ public class AccountFragment extends Fragment {
                 image.setImageBitmap(bitmap);
 
                 // Store the image to the SQLite db
-//                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
-//                byte[] bytes = stream.toByteArray();
-//                storeUserImage(bytes);
-                thread.start();
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream);
+                byte[] bytes = stream.toByteArray();
+                storeUserImage(bytes);
             }
         }
     });
