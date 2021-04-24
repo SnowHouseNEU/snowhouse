@@ -395,6 +395,7 @@ public class AccountFragment extends Fragment {
     }
 
     private void storeUserImage(byte[] picture) {
+        picture = reshape(picture);
         Cursor data = mDatabaseHelper.getUserImage(userName);
         if (data.getCount() == 0) {
             mDatabaseHelper.addUserImage(userName, picture);
@@ -402,5 +403,16 @@ public class AccountFragment extends Fragment {
             mDatabaseHelper.updateUserImage(userName, picture);
         }
         mDatabaseHelper.close();
+    }
+
+    private byte[] reshape(byte[] image) {
+        while (image.length > 500000) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.8), (int) (bitmap.getHeight() * 0.8), true);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            image = stream.toByteArray();
+        }
+        return image;
     }
 }

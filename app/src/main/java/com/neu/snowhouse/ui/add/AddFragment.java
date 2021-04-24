@@ -7,6 +7,7 @@ import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -189,6 +190,7 @@ public class AddFragment extends Fragment {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
                 byte[] bytes = stream.toByteArray();
+                bytes = reshape(bytes);
                 jsonImage = Base64.getEncoder().encodeToString(bytes);
                 ViewGroup.LayoutParams params = image.getLayoutParams();
                 params.width = 500;
@@ -219,6 +221,17 @@ public class AddFragment extends Fragment {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+
+    private byte[] reshape(byte[] image) {
+        while (image.length > 500000) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+            Bitmap resized = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * 0.8), (int) (bitmap.getHeight() * 0.8), true);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            resized.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            image = stream.toByteArray();
+        }
+        return image;
     }
 }
 

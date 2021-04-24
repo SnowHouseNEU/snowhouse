@@ -55,11 +55,11 @@
         <TextView
             android:id="@+id/account_helper_message"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text=""
             android:textAlignment="center"
             android:textSize="24sp"
-            android:textStyle="bold|italic" />
+            android:textStyle="bold|italic"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 
